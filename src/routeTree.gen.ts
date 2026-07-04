@@ -11,8 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthedRouteRouteImport } from './routes/_authed/route'
-import { Route as AuthedIndexRouteImport } from './routes/_authed/index'
-import { Route as AuthedDashboardRouteImport } from './routes/_authed/dashboard'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthedHomeRouteImport } from './routes/_authed/home'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -23,43 +23,44 @@ const AuthedRouteRoute = AuthedRouteRouteImport.update({
   id: '/_authed',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthedIndexRoute = AuthedIndexRouteImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AuthedRouteRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthedDashboardRoute = AuthedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const AuthedHomeRoute = AuthedHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
   getParentRoute: () => AuthedRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof AuthedIndexRoute
+  '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/dashboard': typeof AuthedDashboardRoute
+  '/home': typeof AuthedHomeRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/dashboard': typeof AuthedDashboardRoute
-  '/': typeof AuthedIndexRoute
+  '/home': typeof AuthedHomeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/_authed': typeof AuthedRouteRouteWithChildren
   '/login': typeof LoginRoute
-  '/_authed/dashboard': typeof AuthedDashboardRoute
-  '/_authed/': typeof AuthedIndexRoute
+  '/_authed/home': typeof AuthedHomeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/dashboard'
+  fullPaths: '/' | '/login' | '/home'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/dashboard' | '/'
-  id: '__root__' | '/_authed' | '/login' | '/_authed/dashboard' | '/_authed/'
+  to: '/' | '/login' | '/home'
+  id: '__root__' | '/' | '/_authed' | '/login' | '/_authed/home'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   AuthedRouteRoute: typeof AuthedRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
 }
@@ -80,31 +81,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authed/': {
-      id: '/_authed/'
+    '/': {
+      id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof AuthedIndexRouteImport
-      parentRoute: typeof AuthedRouteRoute
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authed/dashboard': {
-      id: '/_authed/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthedDashboardRouteImport
+    '/_authed/home': {
+      id: '/_authed/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof AuthedHomeRouteImport
       parentRoute: typeof AuthedRouteRoute
     }
   }
 }
 
 interface AuthedRouteRouteChildren {
-  AuthedDashboardRoute: typeof AuthedDashboardRoute
-  AuthedIndexRoute: typeof AuthedIndexRoute
+  AuthedHomeRoute: typeof AuthedHomeRoute
 }
 
 const AuthedRouteRouteChildren: AuthedRouteRouteChildren = {
-  AuthedDashboardRoute: AuthedDashboardRoute,
-  AuthedIndexRoute: AuthedIndexRoute,
+  AuthedHomeRoute: AuthedHomeRoute,
 }
 
 const AuthedRouteRouteWithChildren = AuthedRouteRoute._addFileChildren(
@@ -112,6 +111,7 @@ const AuthedRouteRouteWithChildren = AuthedRouteRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   AuthedRouteRoute: AuthedRouteRouteWithChildren,
   LoginRoute: LoginRoute,
 }

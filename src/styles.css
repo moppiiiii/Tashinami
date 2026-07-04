@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght@9..144,0,500;9..144,0,700;9..144,1,500&family=Manrope:wght@400;500;600;700;800&family=Shippori+Mincho:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap');
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
 
@@ -343,5 +343,366 @@ a {
   body {
     background-color: var(--background);
     color: var(--foreground);
+  }
+}
+
+/* ── Tashinami LP（公開 index）─────────────────────────────────
+   コンセプト（docs/concept.md）準拠：暗いバーの灯りと、琥珀の一杯。
+   このページ専用スコープ。既存テーマトークンには手を入れない。 */
+.tashinami-lp {
+  --ink: #140f0b;
+  --ink-raise: #1e1712;
+  --ink-line: rgba(214, 165, 96, 0.16);
+  --amber: #cf9247;
+  --amber-bright: #ecb972;
+  --amber-deep: #9f6329;
+  --wine: #8c4a45;
+  --rice: #ece2d0;
+  --rice-dim: #a2957f;
+
+  --font-jp-serif: 'Shippori Mincho', 'Fraunces', serif;
+  --font-jp-sans: 'Zen Kaku Gothic New', 'Manrope', sans-serif;
+  --font-latin: 'Fraunces', Georgia, serif;
+
+  position: relative;
+  min-height: 100dvh;
+  overflow: hidden;
+  color: var(--rice);
+  font-family: var(--font-jp-sans);
+  background:
+    radial-gradient(115% 72% at 84% -12%, rgba(207, 146, 71, 0.18), transparent 55%),
+    radial-gradient(92% 60% at 4% 108%, rgba(140, 74, 69, 0.14), transparent 60%),
+    var(--ink);
+}
+
+/* グラスが卓に残す輪染み（coaster ring）を背景の気配として */
+.tashinami-lp::before {
+  content: '';
+  position: absolute;
+  top: 11%;
+  right: 7%;
+  width: 42vw;
+  max-width: 560px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid rgba(207, 146, 71, 0.12);
+  pointer-events: none;
+  opacity: 0.6;
+  z-index: 0;
+}
+
+.tashinami-lp > * {
+  position: relative;
+  z-index: 1;
+}
+
+.lp-serif {
+  font-family: var(--font-jp-serif);
+  font-weight: 600;
+}
+.lp-latin {
+  font-family: var(--font-latin);
+}
+.lp-dim {
+  color: var(--rice-dim);
+}
+.lp-amber {
+  color: var(--amber-bright);
+}
+
+.lp-kicker {
+  font-family: var(--font-latin);
+  font-style: italic;
+  letter-spacing: 0.01em;
+  color: var(--amber-bright);
+}
+.lp-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--rice-dim);
+}
+
+.lp-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  border-radius: 999px;
+  font-weight: 700;
+  color: #1a1109;
+  background: linear-gradient(180deg, var(--amber-bright), var(--amber));
+  box-shadow:
+    0 1px 0 rgba(255, 236, 200, 0.6) inset,
+    0 12px 30px rgba(159, 99, 41, 0.4);
+  transition:
+    transform 180ms ease,
+    filter 180ms ease;
+}
+.lp-cta:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+  color: #1a1109;
+}
+.lp-cta:focus-visible {
+  outline: 2px solid var(--amber-bright);
+  outline-offset: 3px;
+}
+.lp-cta:disabled {
+  opacity: 0.55;
+  transform: none;
+  cursor: not-allowed;
+  filter: none;
+}
+
+.lp-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.8rem 1.2rem;
+  border-radius: 999px;
+  font-weight: 600;
+  color: var(--rice);
+  border: 1px solid var(--ink-line);
+  transition:
+    border-color 180ms ease,
+    color 180ms ease,
+    background 180ms ease;
+}
+.lp-ghost:hover {
+  border-color: rgba(207, 146, 71, 0.5);
+  color: var(--amber-bright);
+  background: rgba(207, 146, 71, 0.06);
+}
+
+.lp-card {
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
+  border: 1px solid var(--ink-line);
+  border-radius: 16px;
+  box-shadow:
+    0 1px 0 rgba(255, 236, 200, 0.06) inset,
+    0 22px 44px rgba(0, 0, 0, 0.34);
+  transition:
+    transform 200ms ease,
+    border-color 200ms ease;
+}
+.lp-card--hover:hover {
+  transform: translateY(-3px);
+  border-color: rgba(207, 146, 71, 0.42);
+}
+
+.lp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--amber-bright);
+  background: rgba(207, 146, 71, 0.1);
+  border: 1px solid rgba(207, 146, 71, 0.24);
+}
+
+.lp-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--ink-line), transparent);
+}
+
+/* 評価メーター：グラスに琥珀が満ちる */
+.lp-meter {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(236, 226, 208, 0.12);
+  overflow: hidden;
+}
+.lp-meter > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--amber-deep), var(--amber-bright));
+}
+
+.lp-rank {
+  font-family: var(--font-latin);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--amber);
+}
+.lp-score {
+  font-family: var(--font-latin);
+  font-variant-numeric: tabular-nums;
+  color: var(--amber-bright);
+}
+
+/* フォーム（ログイン等） */
+.lp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.lp-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--rice-dim);
+}
+.lp-input {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  color: var(--rice);
+  font-size: 0.95rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--ink-line);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+.lp-input::placeholder {
+  color: rgba(162, 149, 127, 0.55);
+}
+.lp-input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(207, 146, 71, 0.6);
+  box-shadow: 0 0 0 3px rgba(207, 146, 71, 0.18);
+}
+.lp-input[aria-invalid="true"] {
+  border-color: rgba(200, 88, 78, 0.7);
+  box-shadow: 0 0 0 3px rgba(200, 88, 78, 0.15);
+}
+.lp-error {
+  color: #e5928a;
+  font-size: 0.8rem;
+}
+
+/* 年次サマリー（Wrapped）カード */
+.lp-wrapped {
+  background:
+    linear-gradient(160deg, rgba(207, 146, 71, 0.16), rgba(140, 74, 69, 0.12)),
+    var(--ink-raise);
+  border: 1px solid rgba(207, 146, 71, 0.3);
+  border-radius: 20px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
+}
+
+/* ── signature：積み上がっていく“一杯カード”のショーケース ── */
+.lp-showcase {
+  position: relative;
+  width: min(400px, 100%);
+  margin-inline: auto;
+}
+.lp-showcase__glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 110%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle,
+    rgba(236, 185, 114, 0.4),
+    rgba(207, 146, 71, 0.12) 46%,
+    transparent 70%
+  );
+  filter: blur(30px);
+  animation: lp-breathe 6s ease-in-out infinite;
+  z-index: 0;
+}
+.lp-showcase__deck {
+  position: relative;
+  z-index: 1;
+  animation: lp-float 7s ease-in-out infinite;
+}
+/* ショーケースのカードは重なるので、下が透けないよう不透明な下地を敷く */
+.lp-showcase__front,
+.lp-showcase__ghost {
+  background:
+    linear-gradient(165deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+    var(--ink-raise);
+  transition:
+    transform 340ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 340ms ease;
+}
+.lp-showcase__front {
+  position: relative;
+  z-index: 2;
+  box-shadow:
+    0 1px 0 rgba(255, 236, 200, 0.08) inset,
+    0 30px 60px rgba(0, 0, 0, 0.55);
+}
+.lp-showcase__ghost {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  filter: brightness(0.72);
+}
+.lp-showcase__ghost--l {
+  transform: rotate(-6deg) translate(-15%, -5%) scale(0.95);
+}
+.lp-showcase__ghost--r {
+  transform: rotate(6deg) translate(15%, 5%) scale(0.95);
+}
+.lp-showcase:hover .lp-showcase__ghost--l {
+  transform: rotate(-13deg) translate(-42%, -13%) scale(0.95);
+}
+.lp-showcase:hover .lp-showcase__ghost--r {
+  transform: rotate(13deg) translate(42%, 13%) scale(0.95);
+}
+.lp-showcase:hover .lp-showcase__front {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow:
+    0 1px 0 rgba(255, 236, 200, 0.1) inset,
+    0 40px 80px rgba(0, 0, 0, 0.6);
+}
+
+@keyframes lp-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+@keyframes lp-breathe {
+  0%,
+  100% {
+    opacity: 0.78;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.lp-rise {
+  animation: lp-rise 800ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.lp-rise-2 {
+  animation-delay: 120ms;
+}
+.lp-rise-3 {
+  animation-delay: 240ms;
+}
+@keyframes lp-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tashinami-lp .lp-showcase__deck,
+  .tashinami-lp .lp-showcase__glow,
+  .tashinami-lp .lp-rise,
+  .tashinami-lp .lp-rise-2,
+  .tashinami-lp .lp-rise-3 {
+    animation: none;
   }
 }
