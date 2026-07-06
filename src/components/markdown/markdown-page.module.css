@@ -68,3 +68,11 @@
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--ink-line), transparent);
 }
+.body img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-top: 1.25rem;
+  border-radius: 14px;
+  border: 1px solid var(--ink-line);
+}
