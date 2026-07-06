@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { LegalLayout } from "@/components/legal/legal-layout";
+import { MarkdownPage } from "@/components/markdown/markdown-page";
 // 本文の正本は src/content/legal/terms.md。`?raw` で読み込んでそのまま描画する。
 import termsMarkdown from "@/content/legal/terms.md?raw";
 
@@ -19,5 +19,5 @@ export const Route = createFileRoute("/terms")({
 });
 
 function TermsPage() {
-  return <LegalLayout markdown={termsMarkdown} />;
+  return <MarkdownPage markdown={termsMarkdown} />;
 }

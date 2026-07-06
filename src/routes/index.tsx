@@ -7,6 +7,8 @@ import {
   Trophy,
 } from "lucide-react";
 
+import { Footer } from "@/components/layout/footer";
+
 // 公開ランディング（未ログインでも見える）。コンセプト（docs/concept.md）の
 // 世界観を伝えるだけの薄いページ。データはすべてダミー。
 export const Route = createFileRoute("/")({
@@ -76,7 +78,7 @@ function Landing() {
         <Features />
         <Reflection />
         <ClosingCta />
-        <SiteFooter />
+        <Footer />
       </div>
     </main>
   );
@@ -321,30 +323,5 @@ function ClosingCta() {
         </Link>
       </div>
     </section>
-  );
-}
-
-function SiteFooter() {
-  return (
-    <footer className="py-10">
-      <div className="lp-divider mb-6" />
-      <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
-        <div className="flex items-baseline gap-2">
-          <span className="lp-serif text-[color:var(--rice)]">嗜み</span>
-          <span className="lp-eyebrow">Tashinami</span>
-        </div>
-        <nav className="flex items-center gap-6 text-sm">
-          <Link to="/terms" className="lp-dim no-underline">
-            利用規約
-          </Link>
-          <Link to="/privacy" className="lp-dim no-underline">
-            プライバシーポリシー
-          </Link>
-        </nav>
-        <p className="lp-dim text-xs">
-          © 2025 Tashinami — ほどよく、品よく、味わう。
-        </p>
-      </div>
-    </footer>
   );
 }

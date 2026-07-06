@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { LegalLayout } from "@/components/legal/legal-layout";
+import { MarkdownPage } from "@/components/markdown/markdown-page";
+// 本文の正本は src/content/legal/privacy.md。`?raw` で読み込んでそのまま描画する。
 import policyMarkdown from "@/content/legal/privacy.md?raw";
 
 // 公開ページ（未ログインでも閲覧可）。
@@ -18,5 +19,5 @@ export const Route = createFileRoute("/privacy")({
 });
 
 function PrivacyPage() {
-  return <LegalLayout markdown={policyMarkdown} />;
+  return <MarkdownPage markdown={policyMarkdown} />;
 }
