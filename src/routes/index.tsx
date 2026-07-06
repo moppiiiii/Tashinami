@@ -333,6 +333,14 @@ function SiteFooter() {
           <span className="lp-serif text-[color:var(--rice)]">嗜み</span>
           <span className="lp-eyebrow">Tashinami</span>
         </div>
+        <nav className="flex items-center gap-6 text-sm">
+          <Link to="/terms" className="lp-dim no-underline">
+            利用規約
+          </Link>
+          <Link to="/privacy" className="lp-dim no-underline">
+            プライバシーポリシー
+          </Link>
+        </nav>
         <p className="lp-dim text-xs">
           © 2025 Tashinami — ほどよく、品よく、味わう。
         </p>
