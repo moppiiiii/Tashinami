@@ -115,7 +115,7 @@ function Hero() {
           静かに残す。
         </h1>
         <p className="lp-dim mt-6 max-w-md text-base leading-relaxed">
-          銘柄も、飲んだ場所も、あの夜の気分も。ひと口ずつ書き留めていく、大人のための飲酒日記。
+          銘柄も、飲んだ場所も、あの夜の気分も。ひと口ずつ書き留めていく、大人のための一杯日記。
           一年後、それはあなたの物語になる。
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-3">
