@@ -33,7 +33,8 @@ function CreatorPage() {
           <p className="lp-eyebrow mb-2">Creator</p>
           <h1 className="lp-serif text-3xl md:text-4xl">制作者について</h1>
           <p className="lp-dim mt-3 max-w-md leading-relaxed">
-            いねにこ と申します。嗜み（Tashinami）を一人でつくっている個人開発者です。
+            いねにこ
+            と申します。嗜み（Tashinami）を一人でつくっている個人開発者です。
           </p>
 
           <img
