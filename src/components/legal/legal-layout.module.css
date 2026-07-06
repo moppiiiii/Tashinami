@@ -37,6 +37,10 @@
 .body a {
   color: var(--amber-bright);
   text-decoration: underline;
+  transition: color 180ms ease;
+}
+.body a:hover {
+  color: var(--rice);
 }
 .body ol,
 .body ul {

@@ -406,6 +406,14 @@ a {
 .lp-dim {
   color: var(--rice-dim);
 }
+/* リンクとして使う lp-dim（フッターナビ等）のホバーはテーマの琥珀へ。
+   グローバルの a:hover（青緑）が LP スコープに漏れるのを打ち消す。 */
+a.lp-dim {
+  transition: color 180ms ease;
+}
+a.lp-dim:hover {
+  color: var(--amber-bright);
+}
 .lp-amber {
   color: var(--amber-bright);
 }
