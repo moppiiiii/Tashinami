@@ -16,6 +16,8 @@ import { Route as CreatorRouteImport } from './routes/creator'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AuthedRouteRouteImport } from './routes/_authed/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DrinksIndexRouteImport } from './routes/drinks/index'
+import { Route as DrinksSlugRouteImport } from './routes/drinks/$slug'
 import { Route as AuthedZukanRouteImport } from './routes/_authed/zukan'
 import { Route as AuthedHomeRouteImport } from './routes/_authed/home'
 import { Route as AuthedRecordsIndexRouteImport } from './routes/_authed/records/index'
@@ -56,6 +58,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DrinksIndexRoute = DrinksIndexRouteImport.update({
+  id: '/drinks/',
+  path: '/drinks/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DrinksSlugRoute = DrinksSlugRouteImport.update({
+  id: '/drinks/$slug',
+  path: '/drinks/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthedZukanRoute = AuthedZukanRouteImport.update({
   id: '/zukan',
   path: '/zukan',
@@ -92,6 +104,8 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/home': typeof AuthedHomeRoute
   '/zukan': typeof AuthedZukanRoute
+  '/drinks/$slug': typeof DrinksSlugRoute
+  '/drinks/': typeof DrinksIndexRoute
   '/records/new': typeof AuthedRecordsNewRoute
   '/records/': typeof AuthedRecordsIndexRoute
   '/records/$recordId/edit': typeof AuthedRecordsRecordIdEditRoute
@@ -105,6 +119,8 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/home': typeof AuthedHomeRoute
   '/zukan': typeof AuthedZukanRoute
+  '/drinks/$slug': typeof DrinksSlugRoute
+  '/drinks': typeof DrinksIndexRoute
   '/records/new': typeof AuthedRecordsNewRoute
   '/records': typeof AuthedRecordsIndexRoute
   '/records/$recordId/edit': typeof AuthedRecordsRecordIdEditRoute
@@ -120,6 +136,8 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/_authed/home': typeof AuthedHomeRoute
   '/_authed/zukan': typeof AuthedZukanRoute
+  '/drinks/$slug': typeof DrinksSlugRoute
+  '/drinks/': typeof DrinksIndexRoute
   '/_authed/records/new': typeof AuthedRecordsNewRoute
   '/_authed/records/': typeof AuthedRecordsIndexRoute
   '/_authed/records/$recordId/edit': typeof AuthedRecordsRecordIdEditRoute
@@ -135,6 +153,8 @@ export interface FileRouteTypes {
     | '/terms'
     | '/home'
     | '/zukan'
+    | '/drinks/$slug'
+    | '/drinks/'
     | '/records/new'
     | '/records/'
     | '/records/$recordId/edit'
@@ -148,6 +168,8 @@ export interface FileRouteTypes {
     | '/terms'
     | '/home'
     | '/zukan'
+    | '/drinks/$slug'
+    | '/drinks'
     | '/records/new'
     | '/records'
     | '/records/$recordId/edit'
@@ -162,6 +184,8 @@ export interface FileRouteTypes {
     | '/terms'
     | '/_authed/home'
     | '/_authed/zukan'
+    | '/drinks/$slug'
+    | '/drinks/'
     | '/_authed/records/new'
     | '/_authed/records/'
     | '/_authed/records/$recordId/edit'
@@ -175,6 +199,8 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
+  DrinksSlugRoute: typeof DrinksSlugRoute
+  DrinksIndexRoute: typeof DrinksIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -226,6 +252,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/drinks/': {
+      id: '/drinks/'
+      path: '/drinks'
+      fullPath: '/drinks/'
+      preLoaderRoute: typeof DrinksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/drinks/$slug': {
+      id: '/drinks/$slug'
+      path: '/drinks/$slug'
+      fullPath: '/drinks/$slug'
+      preLoaderRoute: typeof DrinksSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authed/zukan': {
@@ -294,6 +334,8 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,
+  DrinksSlugRoute: DrinksSlugRoute,
+  DrinksIndexRoute: DrinksIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

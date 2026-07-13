@@ -1,14 +1,14 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
 import { Plus } from "lucide-react";
 
+import { AuthedHeader } from "@/components/layout/authed-header";
 import { RecentPours } from "@/components/records/recent-pours";
 import { RecordList } from "@/components/records/record-list";
 import { RecordReveal } from "@/components/records/record-reveal";
 import { clearReveal, revealStore } from "@/components/records/reveal-store";
 import { ShelfStats } from "@/components/records/shelf-stats";
-import { useSignOut } from "@/hooks/use-sign-out";
 import { categoriesQueryOptions } from "@/server/categories";
 import { recordsQueryOptions } from "@/server/records";
 
@@ -27,8 +27,6 @@ export const Route = createFileRoute("/_authed/home")({
 function HomePage() {
   // ガード（_authed）が context にマージした user。非 null。
   const { user } = Route.useRouteContext();
-  const navigate = useNavigate();
-  const signOut = useSignOut();
   const { data: records } = useSuspenseQuery(recordsQueryOptions());
   const { data: categories } = useSuspenseQuery(categoriesQueryOptions());
   const reveal = useStore(revealStore);
@@ -38,31 +36,7 @@ function HomePage() {
   return (
     <main className="tashinami-lp min-h-dvh">
       <div className="mx-auto w-full max-w-4xl px-6">
-        <header className="flex items-center justify-between py-6">
-          <Link to="/" className="flex items-baseline gap-2 no-underline">
-            <span className="lp-serif text-xl text-[color:var(--rice)]">
-              嗜み
-            </span>
-            <span className="lp-eyebrow">Tashinami</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <Link to="/zukan" className="lp-ghost text-sm no-underline">
-              図鑑
-            </Link>
-            <button
-              type="button"
-              className="lp-ghost text-sm"
-              disabled={signOut.isPending}
-              onClick={() =>
-                signOut.mutate(undefined, {
-                  onSuccess: () => navigate({ to: "/login" }),
-                })
-              }
-            >
-              {signOut.isPending ? "ログアウト中…" : "ログアウト"}
-            </button>
-          </div>
-        </header>
+        <AuthedHeader />
 
         <section className="lp-rise py-12 md:py-16">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
