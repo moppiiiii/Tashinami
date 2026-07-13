@@ -12,6 +12,9 @@ export function Footer() {
           <span className="lp-eyebrow">Tashinami</span>
         </div>
         <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
+          <Link to="/drinks" className="lp-dim no-underline">
+            飲み方ガイド
+          </Link>
           <Link to="/creator" className="lp-dim no-underline">
             制作者について
           </Link>

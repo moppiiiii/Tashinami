@@ -1,7 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
 
+import { AuthedHeader } from "@/components/layout/authed-header";
 import { RecordsBrowser } from "@/components/records/records-browser";
 import { categoriesQueryOptions } from "@/server/categories";
 import { recordsQueryOptions } from "@/server/records";
@@ -24,23 +24,7 @@ function RecordsPage() {
   return (
     <main className="tashinami-lp min-h-dvh">
       <div className="mx-auto w-full max-w-4xl px-6">
-        <header className="flex items-center justify-between py-6">
-          <Link to="/home" className="flex items-baseline gap-2 no-underline">
-            <span className="lp-serif text-xl text-[color:var(--rice)]">
-              嗜み
-            </span>
-            <span className="lp-eyebrow">Tashinami</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <Link to="/zukan" className="lp-ghost text-sm no-underline">
-              図鑑
-            </Link>
-            <Link to="/records/new" className="lp-cta text-sm no-underline">
-              <Plus size={16} />
-              記録する
-            </Link>
-          </div>
-        </header>
+        <AuthedHeader />
 
         <section className="lp-rise py-8 md:py-12">
           <RecordsBrowser records={records} categories={categories} />

@@ -111,6 +111,12 @@ function SiteHeader() {
         <a href="#reflection" className="lp-dim hidden text-sm sm:inline">
           振り返り
         </a>
+        <Link
+          to="/drinks"
+          className="lp-dim hidden text-sm no-underline sm:inline"
+        >
+          飲み方
+        </Link>
         <Link to="/login" className="lp-ghost text-sm no-underline">
           ログイン
         </Link>
