@@ -5,6 +5,14 @@
 ```
 src/
   routes/                 # TanStack Router のファイルルート。薄く保つ（loader + 画面シェルのみ）
+    about.tsx             # 子のないページは平置き（URL: /about）
+    _authed/              # pathless レイアウト（先頭 _ は URL に出ない）
+      route.tsx           # 認証ガード。配下が継承する
+      records/            # 子が 2 つ以上あるセグメントはディレクトリに切る
+        index.tsx         # URL: /records
+        new.tsx           # URL: /records/new
+        $recordId/        # 動的セグメントは $ 接頭辞
+          edit.tsx        # URL: /records/:recordId/edit
   components/
     ui/                   # shadcn/ui プリミティブ（考えずに置く）
     <feature>/            # 機能ごとの画面パーツ（例: todos/）
@@ -25,6 +33,12 @@ src/
   env.ts                  # t3-env による環境変数（型＋実行時バリデーション）
   router.tsx
 ```
+
+### ルートの命名
+
+ドット区切り（`records.new.tsx`）とディレクトリ（`records/new.tsx`）は**同じルート ID に展開される**ので、どちらで書いても URL・`createFileRoute` の文字列は変わらない。本プロジェクトは可読性のため、**子のないページは平置き・子が 2 つ以上あるセグメントはディレクトリ**に統一する。ドット区切りで階層を伸ばさない（`records.$recordId.edit.tsx` のような名前は作らない）。
+
+移行が必要になったらファイルを移動して `bun run generate-routes` を叩くだけでよい。ルート定義もコンポーネントも書き換え不要。
 
 ## 「どこに何を置くか」の規約
 

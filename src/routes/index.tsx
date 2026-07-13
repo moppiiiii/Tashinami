@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 
 import { Footer } from "@/components/layout/footer";
+import { DrinkImage } from "@/components/zukan/drink-image";
 
 // 公開ランディング（未ログインでも見える）。コンセプト（docs/concept.md）の
 // 世界観を伝えるだけの薄いページ。データはすべてダミー。
@@ -17,17 +18,29 @@ export const Route = createFileRoute("/")({
 
 // ── ダミーデータ ───────────────────────────────────────────────
 // ヒーローで重ねて見せる“一杯カード”。カテゴリの幅も一望できるよう選ぶ。
+// slug は categories マスタと同じ値。器の絵と差し色がこれで決まる。
 const showcase = {
   front: {
     name: "響 17年",
     category: "ウイスキー",
+    slug: "whisky",
     rating: 9.2,
     place: "BAR 灯 · 神楽坂",
     date: "2025.6.28",
     note: "余韻に蜜と樽。長い夜のはじまり。",
   },
-  left: { name: "醸し人九平次", category: "日本酒", rating: 8.8 },
-  right: { name: "甲州 きいろ香", category: "ワイン", rating: 7.6 },
+  left: {
+    name: "醸し人九平次",
+    category: "日本酒",
+    slug: "sake",
+    rating: 8.8,
+  },
+  right: {
+    name: "甲州 きいろ香",
+    category: "ワイン",
+    slug: "wine",
+    rating: 7.6,
+  },
 };
 
 const features = [
@@ -153,18 +166,25 @@ function RecordShowcase() {
 
         {/* 手前の 1 枚（詳細まで見せる） */}
         <article className="lp-card lp-showcase__front p-6">
-          <div className="mb-3 flex items-center justify-between">
-            <span className="lp-chip">{showcase.front.category}</span>
-            <span className="lp-dim text-xs">{showcase.front.date}</span>
+          {/* 器は見出し帯の専用列。ほかのどの要素とも重ならない。 */}
+          <div className="flex items-center gap-4">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                <span className="lp-chip">{showcase.front.category}</span>
+                <span className="lp-dim text-xs">{showcase.front.date}</span>
+              </div>
+              <h3 className="lp-serif mt-2.5 truncate text-xl leading-snug">
+                {showcase.front.name}
+              </h3>
+              <p className="lp-dim mt-1.5 flex items-center gap-1 text-xs">
+                <MapPin size={12} className="shrink-0" />
+                <span className="truncate">{showcase.front.place}</span>
+              </p>
+            </div>
+            <DrinkImage slug={showcase.front.slug} size={76} eager />
           </div>
-          <h3 className="lp-serif text-xl leading-snug">
-            {showcase.front.name}
-          </h3>
-          <p className="lp-dim mt-1.5 flex items-center gap-1 text-xs">
-            <MapPin size={12} />
-            {showcase.front.place}
-          </p>
-          <p className="mt-3 text-sm leading-relaxed">{showcase.front.note}</p>
+
+          <p className="mt-4 text-sm leading-relaxed">{showcase.front.note}</p>
           <div className="mt-5 flex items-center gap-3">
             <div className="lp-meter flex-1">
               <span style={{ width: `${showcase.front.rating * 10}%` }} />
@@ -183,17 +203,24 @@ function GhostCard({
   drink,
   side,
 }: {
-  drink: { name: string; category: string; rating: number };
+  drink: { name: string; category: string; slug: string; rating: number };
   side: "l" | "r";
 }) {
   return (
     <article
       className={`lp-card lp-showcase__ghost lp-showcase__ghost--${side} p-6`}
     >
-      <div className="mb-3 flex items-center justify-between">
-        <span className="lp-chip">{drink.category}</span>
+      {/* 手前のカードと同じ骨格。器は隠れる位置でも動かさない。 */}
+      <div className="flex items-center gap-4">
+        <div className="min-w-0 flex-1">
+          <span className="lp-chip">{drink.category}</span>
+          <h3 className="lp-serif mt-2.5 truncate text-lg leading-snug">
+            {drink.name}
+          </h3>
+        </div>
+        <DrinkImage slug={drink.slug} size={76} glow={false} />
       </div>
-      <h3 className="lp-serif text-lg leading-snug">{drink.name}</h3>
+
       <div className="mt-5 flex items-center gap-3">
         <div className="lp-meter flex-1">
           <span style={{ width: `${drink.rating * 10}%` }} />

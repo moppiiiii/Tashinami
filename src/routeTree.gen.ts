@@ -16,7 +16,11 @@ import { Route as CreatorRouteImport } from './routes/creator'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AuthedRouteRouteImport } from './routes/_authed/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthedZukanRouteImport } from './routes/_authed/zukan'
 import { Route as AuthedHomeRouteImport } from './routes/_authed/home'
+import { Route as AuthedRecordsIndexRouteImport } from './routes/_authed/records/index'
+import { Route as AuthedRecordsNewRouteImport } from './routes/_authed/records/new'
+import { Route as AuthedRecordsRecordIdEditRouteImport } from './routes/_authed/records/$recordId/edit'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -52,11 +56,32 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthedZukanRoute = AuthedZukanRouteImport.update({
+  id: '/zukan',
+  path: '/zukan',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
 const AuthedHomeRoute = AuthedHomeRouteImport.update({
   id: '/home',
   path: '/home',
   getParentRoute: () => AuthedRouteRoute,
 } as any)
+const AuthedRecordsIndexRoute = AuthedRecordsIndexRouteImport.update({
+  id: '/records/',
+  path: '/records/',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedRecordsNewRoute = AuthedRecordsNewRouteImport.update({
+  id: '/records/new',
+  path: '/records/new',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedRecordsRecordIdEditRoute =
+  AuthedRecordsRecordIdEditRouteImport.update({
+    id: '/records/$recordId/edit',
+    path: '/records/$recordId/edit',
+    getParentRoute: () => AuthedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -66,6 +91,10 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/home': typeof AuthedHomeRoute
+  '/zukan': typeof AuthedZukanRoute
+  '/records/new': typeof AuthedRecordsNewRoute
+  '/records/': typeof AuthedRecordsIndexRoute
+  '/records/$recordId/edit': typeof AuthedRecordsRecordIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -75,6 +104,10 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/home': typeof AuthedHomeRoute
+  '/zukan': typeof AuthedZukanRoute
+  '/records/new': typeof AuthedRecordsNewRoute
+  '/records': typeof AuthedRecordsIndexRoute
+  '/records/$recordId/edit': typeof AuthedRecordsRecordIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -86,13 +119,38 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/_authed/home': typeof AuthedHomeRoute
+  '/_authed/zukan': typeof AuthedZukanRoute
+  '/_authed/records/new': typeof AuthedRecordsNewRoute
+  '/_authed/records/': typeof AuthedRecordsIndexRoute
+  '/_authed/records/$recordId/edit': typeof AuthedRecordsRecordIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/contact' | '/creator' | '/login' | '/privacy' | '/terms' | '/home'
+    | '/'
+    | '/contact'
+    | '/creator'
+    | '/login'
+    | '/privacy'
+    | '/terms'
+    | '/home'
+    | '/zukan'
+    | '/records/new'
+    | '/records/'
+    | '/records/$recordId/edit'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/contact' | '/creator' | '/login' | '/privacy' | '/terms' | '/home'
+  to:
+    | '/'
+    | '/contact'
+    | '/creator'
+    | '/login'
+    | '/privacy'
+    | '/terms'
+    | '/home'
+    | '/zukan'
+    | '/records/new'
+    | '/records'
+    | '/records/$recordId/edit'
   id:
     | '__root__'
     | '/'
@@ -103,6 +161,10 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/terms'
     | '/_authed/home'
+    | '/_authed/zukan'
+    | '/_authed/records/new'
+    | '/_authed/records/'
+    | '/_authed/records/$recordId/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -166,6 +228,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authed/zukan': {
+      id: '/_authed/zukan'
+      path: '/zukan'
+      fullPath: '/zukan'
+      preLoaderRoute: typeof AuthedZukanRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
     '/_authed/home': {
       id: '/_authed/home'
       path: '/home'
@@ -173,15 +242,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedHomeRouteImport
       parentRoute: typeof AuthedRouteRoute
     }
+    '/_authed/records/': {
+      id: '/_authed/records/'
+      path: '/records'
+      fullPath: '/records/'
+      preLoaderRoute: typeof AuthedRecordsIndexRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/records/new': {
+      id: '/_authed/records/new'
+      path: '/records/new'
+      fullPath: '/records/new'
+      preLoaderRoute: typeof AuthedRecordsNewRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/records/$recordId/edit': {
+      id: '/_authed/records/$recordId/edit'
+      path: '/records/$recordId/edit'
+      fullPath: '/records/$recordId/edit'
+      preLoaderRoute: typeof AuthedRecordsRecordIdEditRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
   }
 }
 
 interface AuthedRouteRouteChildren {
   AuthedHomeRoute: typeof AuthedHomeRoute
+  AuthedZukanRoute: typeof AuthedZukanRoute
+  AuthedRecordsNewRoute: typeof AuthedRecordsNewRoute
+  AuthedRecordsIndexRoute: typeof AuthedRecordsIndexRoute
+  AuthedRecordsRecordIdEditRoute: typeof AuthedRecordsRecordIdEditRoute
 }
 
 const AuthedRouteRouteChildren: AuthedRouteRouteChildren = {
   AuthedHomeRoute: AuthedHomeRoute,
+  AuthedZukanRoute: AuthedZukanRoute,
+  AuthedRecordsNewRoute: AuthedRecordsNewRoute,
+  AuthedRecordsIndexRoute: AuthedRecordsIndexRoute,
+  AuthedRecordsRecordIdEditRoute: AuthedRecordsRecordIdEditRoute,
 }
 
 const AuthedRouteRouteWithChildren = AuthedRouteRoute._addFileChildren(

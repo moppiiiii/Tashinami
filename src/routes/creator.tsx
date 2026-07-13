@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
 
-import creatorImg from "@/assets/creator.png";
+import creatorImg from "@/assets/creator.webp";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 
