@@ -7,10 +7,14 @@ import { appSchema } from "@/schemas";
 import { createSupabaseClient } from "./query";
 
 /**
- * リクエストの Cookie を読み書きするサーバークライアント。
+ * リクエストの Cookie を読み書きする素のサーバークライアント。
  * `setAll` は必須（未実装だとトークンリフレッシュ後の Cookie を書き戻せずセッションが切れる）。
+ *
+ * 認証系 serverFn（getUser / signIn / signOut）はこれを直接使い、auth メソッドを 1 回だけ叩く。
+ * `getUser()` は内部でセッション読込・必要ならリフレッシュまで行うため、`getSession()` を
+ * 前置きしない（認証操作を二重に走らせない）。データアクセスは下の `$supabaseServer()` を使う。
  */
-function createSupabaseServerClient() {
+export function createSupabaseServerClient() {
   return createServerClient(
     env.VITE_SUPABASE_URL,
     env.VITE_SUPABASE_PUBLISHABLE_KEY,

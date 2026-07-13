@@ -1,6 +1,7 @@
 {
-  "short_name": "TanStack App",
-  "name": "Create TanStack App Sample",
+  "short_name": "嗜み",
+  "name": "嗜み — Tashinami",
+  "description": "飲んだ一杯を静かに残す、大人のための一杯日記。",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +21,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#cf9247",
+  "background_color": "#e7f3ec"
 }

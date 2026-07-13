@@ -9,68 +9,291 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as CreatorRouteImport } from './routes/creator'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ConceptRouteImport } from './routes/concept'
 import { Route as AuthedRouteRouteImport } from './routes/_authed/route'
-import { Route as AuthedIndexRouteImport } from './routes/_authed/index'
-import { Route as AuthedDashboardRouteImport } from './routes/_authed/dashboard'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as DrinksIndexRouteImport } from './routes/drinks/index'
+import { Route as DrinksSlugRouteImport } from './routes/drinks/$slug'
+import { Route as AuthedZukanRouteImport } from './routes/_authed/zukan'
+import { Route as AuthedTop10RouteImport } from './routes/_authed/top10'
+import { Route as AuthedHomeRouteImport } from './routes/_authed/home'
+import { Route as AuthedRecordsIndexRouteImport } from './routes/_authed/records/index'
+import { Route as AuthedPlacesIndexRouteImport } from './routes/_authed/places/index'
+import { Route as AuthedRecordsNewRouteImport } from './routes/_authed/records/new'
+import { Route as AuthedPlacesPlaceKeyRouteImport } from './routes/_authed/places/$placeKey'
+import { Route as AuthedRecordsRecordIdEditRouteImport } from './routes/_authed/records/$recordId/edit'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreatorRoute = CreatorRouteImport.update({
+  id: '/creator',
+  path: '/creator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConceptRoute = ConceptRouteImport.update({
+  id: '/concept',
+  path: '/concept',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthedRouteRoute = AuthedRouteRouteImport.update({
   id: '/_authed',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthedIndexRoute = AuthedIndexRouteImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DrinksIndexRoute = DrinksIndexRouteImport.update({
+  id: '/drinks/',
+  path: '/drinks/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DrinksSlugRoute = DrinksSlugRouteImport.update({
+  id: '/drinks/$slug',
+  path: '/drinks/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthedZukanRoute = AuthedZukanRouteImport.update({
+  id: '/zukan',
+  path: '/zukan',
   getParentRoute: () => AuthedRouteRoute,
 } as any)
-const AuthedDashboardRoute = AuthedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const AuthedTop10Route = AuthedTop10RouteImport.update({
+  id: '/top10',
+  path: '/top10',
   getParentRoute: () => AuthedRouteRoute,
 } as any)
+const AuthedHomeRoute = AuthedHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedRecordsIndexRoute = AuthedRecordsIndexRouteImport.update({
+  id: '/records/',
+  path: '/records/',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedPlacesIndexRoute = AuthedPlacesIndexRouteImport.update({
+  id: '/places/',
+  path: '/places/',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedRecordsNewRoute = AuthedRecordsNewRouteImport.update({
+  id: '/records/new',
+  path: '/records/new',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedPlacesPlaceKeyRoute = AuthedPlacesPlaceKeyRouteImport.update({
+  id: '/places/$placeKey',
+  path: '/places/$placeKey',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedRecordsRecordIdEditRoute =
+  AuthedRecordsRecordIdEditRouteImport.update({
+    id: '/records/$recordId/edit',
+    path: '/records/$recordId/edit',
+    getParentRoute: () => AuthedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof AuthedIndexRoute
+  '/': typeof IndexRoute
+  '/concept': typeof ConceptRoute
+  '/contact': typeof ContactRoute
+  '/creator': typeof CreatorRoute
   '/login': typeof LoginRoute
-  '/dashboard': typeof AuthedDashboardRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
+  '/home': typeof AuthedHomeRoute
+  '/top10': typeof AuthedTop10Route
+  '/zukan': typeof AuthedZukanRoute
+  '/drinks/$slug': typeof DrinksSlugRoute
+  '/drinks/': typeof DrinksIndexRoute
+  '/places/$placeKey': typeof AuthedPlacesPlaceKeyRoute
+  '/records/new': typeof AuthedRecordsNewRoute
+  '/places/': typeof AuthedPlacesIndexRoute
+  '/records/': typeof AuthedRecordsIndexRoute
+  '/records/$recordId/edit': typeof AuthedRecordsRecordIdEditRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '/concept': typeof ConceptRoute
+  '/contact': typeof ContactRoute
+  '/creator': typeof CreatorRoute
   '/login': typeof LoginRoute
-  '/dashboard': typeof AuthedDashboardRoute
-  '/': typeof AuthedIndexRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
+  '/home': typeof AuthedHomeRoute
+  '/top10': typeof AuthedTop10Route
+  '/zukan': typeof AuthedZukanRoute
+  '/drinks/$slug': typeof DrinksSlugRoute
+  '/drinks': typeof DrinksIndexRoute
+  '/places/$placeKey': typeof AuthedPlacesPlaceKeyRoute
+  '/records/new': typeof AuthedRecordsNewRoute
+  '/places': typeof AuthedPlacesIndexRoute
+  '/records': typeof AuthedRecordsIndexRoute
+  '/records/$recordId/edit': typeof AuthedRecordsRecordIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/_authed': typeof AuthedRouteRouteWithChildren
+  '/concept': typeof ConceptRoute
+  '/contact': typeof ContactRoute
+  '/creator': typeof CreatorRoute
   '/login': typeof LoginRoute
-  '/_authed/dashboard': typeof AuthedDashboardRoute
-  '/_authed/': typeof AuthedIndexRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
+  '/_authed/home': typeof AuthedHomeRoute
+  '/_authed/top10': typeof AuthedTop10Route
+  '/_authed/zukan': typeof AuthedZukanRoute
+  '/drinks/$slug': typeof DrinksSlugRoute
+  '/drinks/': typeof DrinksIndexRoute
+  '/_authed/places/$placeKey': typeof AuthedPlacesPlaceKeyRoute
+  '/_authed/records/new': typeof AuthedRecordsNewRoute
+  '/_authed/places/': typeof AuthedPlacesIndexRoute
+  '/_authed/records/': typeof AuthedRecordsIndexRoute
+  '/_authed/records/$recordId/edit': typeof AuthedRecordsRecordIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/dashboard'
+  fullPaths:
+    | '/'
+    | '/concept'
+    | '/contact'
+    | '/creator'
+    | '/login'
+    | '/privacy'
+    | '/terms'
+    | '/home'
+    | '/top10'
+    | '/zukan'
+    | '/drinks/$slug'
+    | '/drinks/'
+    | '/places/$placeKey'
+    | '/records/new'
+    | '/places/'
+    | '/records/'
+    | '/records/$recordId/edit'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/dashboard' | '/'
-  id: '__root__' | '/_authed' | '/login' | '/_authed/dashboard' | '/_authed/'
+  to:
+    | '/'
+    | '/concept'
+    | '/contact'
+    | '/creator'
+    | '/login'
+    | '/privacy'
+    | '/terms'
+    | '/home'
+    | '/top10'
+    | '/zukan'
+    | '/drinks/$slug'
+    | '/drinks'
+    | '/places/$placeKey'
+    | '/records/new'
+    | '/places'
+    | '/records'
+    | '/records/$recordId/edit'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authed'
+    | '/concept'
+    | '/contact'
+    | '/creator'
+    | '/login'
+    | '/privacy'
+    | '/terms'
+    | '/_authed/home'
+    | '/_authed/top10'
+    | '/_authed/zukan'
+    | '/drinks/$slug'
+    | '/drinks/'
+    | '/_authed/places/$placeKey'
+    | '/_authed/records/new'
+    | '/_authed/places/'
+    | '/_authed/records/'
+    | '/_authed/records/$recordId/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   AuthedRouteRoute: typeof AuthedRouteRouteWithChildren
+  ConceptRoute: typeof ConceptRoute
+  ContactRoute: typeof ContactRoute
+  CreatorRoute: typeof CreatorRoute
   LoginRoute: typeof LoginRoute
+  PrivacyRoute: typeof PrivacyRoute
+  TermsRoute: typeof TermsRoute
+  DrinksSlugRoute: typeof DrinksSlugRoute
+  DrinksIndexRoute: typeof DrinksIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creator': {
+      id: '/creator'
+      path: '/creator'
+      fullPath: '/creator'
+      preLoaderRoute: typeof CreatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/concept': {
+      id: '/concept'
+      path: '/concept'
+      fullPath: '/concept'
+      preLoaderRoute: typeof ConceptRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authed': {
@@ -80,31 +303,106 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authed/': {
-      id: '/_authed/'
+    '/': {
+      id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof AuthedIndexRouteImport
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/drinks/': {
+      id: '/drinks/'
+      path: '/drinks'
+      fullPath: '/drinks/'
+      preLoaderRoute: typeof DrinksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/drinks/$slug': {
+      id: '/drinks/$slug'
+      path: '/drinks/$slug'
+      fullPath: '/drinks/$slug'
+      preLoaderRoute: typeof DrinksSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authed/zukan': {
+      id: '/_authed/zukan'
+      path: '/zukan'
+      fullPath: '/zukan'
+      preLoaderRoute: typeof AuthedZukanRouteImport
       parentRoute: typeof AuthedRouteRoute
     }
-    '/_authed/dashboard': {
-      id: '/_authed/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthedDashboardRouteImport
+    '/_authed/top10': {
+      id: '/_authed/top10'
+      path: '/top10'
+      fullPath: '/top10'
+      preLoaderRoute: typeof AuthedTop10RouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/home': {
+      id: '/_authed/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof AuthedHomeRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/records/': {
+      id: '/_authed/records/'
+      path: '/records'
+      fullPath: '/records/'
+      preLoaderRoute: typeof AuthedRecordsIndexRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/places/': {
+      id: '/_authed/places/'
+      path: '/places'
+      fullPath: '/places/'
+      preLoaderRoute: typeof AuthedPlacesIndexRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/records/new': {
+      id: '/_authed/records/new'
+      path: '/records/new'
+      fullPath: '/records/new'
+      preLoaderRoute: typeof AuthedRecordsNewRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/places/$placeKey': {
+      id: '/_authed/places/$placeKey'
+      path: '/places/$placeKey'
+      fullPath: '/places/$placeKey'
+      preLoaderRoute: typeof AuthedPlacesPlaceKeyRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/records/$recordId/edit': {
+      id: '/_authed/records/$recordId/edit'
+      path: '/records/$recordId/edit'
+      fullPath: '/records/$recordId/edit'
+      preLoaderRoute: typeof AuthedRecordsRecordIdEditRouteImport
       parentRoute: typeof AuthedRouteRoute
     }
   }
 }
 
 interface AuthedRouteRouteChildren {
-  AuthedDashboardRoute: typeof AuthedDashboardRoute
-  AuthedIndexRoute: typeof AuthedIndexRoute
+  AuthedHomeRoute: typeof AuthedHomeRoute
+  AuthedTop10Route: typeof AuthedTop10Route
+  AuthedZukanRoute: typeof AuthedZukanRoute
+  AuthedPlacesPlaceKeyRoute: typeof AuthedPlacesPlaceKeyRoute
+  AuthedRecordsNewRoute: typeof AuthedRecordsNewRoute
+  AuthedPlacesIndexRoute: typeof AuthedPlacesIndexRoute
+  AuthedRecordsIndexRoute: typeof AuthedRecordsIndexRoute
+  AuthedRecordsRecordIdEditRoute: typeof AuthedRecordsRecordIdEditRoute
 }
 
 const AuthedRouteRouteChildren: AuthedRouteRouteChildren = {
-  AuthedDashboardRoute: AuthedDashboardRoute,
-  AuthedIndexRoute: AuthedIndexRoute,
+  AuthedHomeRoute: AuthedHomeRoute,
+  AuthedTop10Route: AuthedTop10Route,
+  AuthedZukanRoute: AuthedZukanRoute,
+  AuthedPlacesPlaceKeyRoute: AuthedPlacesPlaceKeyRoute,
+  AuthedRecordsNewRoute: AuthedRecordsNewRoute,
+  AuthedPlacesIndexRoute: AuthedPlacesIndexRoute,
+  AuthedRecordsIndexRoute: AuthedRecordsIndexRoute,
+  AuthedRecordsRecordIdEditRoute: AuthedRecordsRecordIdEditRoute,
 }
 
 const AuthedRouteRouteWithChildren = AuthedRouteRoute._addFileChildren(
@@ -112,8 +410,16 @@ const AuthedRouteRouteWithChildren = AuthedRouteRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   AuthedRouteRoute: AuthedRouteRouteWithChildren,
+  ConceptRoute: ConceptRoute,
+  ContactRoute: ContactRoute,
+  CreatorRoute: CreatorRoute,
   LoginRoute: LoginRoute,
+  PrivacyRoute: PrivacyRoute,
+  TermsRoute: TermsRoute,
+  DrinksSlugRoute: DrinksSlugRoute,
+  DrinksIndexRoute: DrinksIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

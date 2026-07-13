@@ -1,12 +1,31 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght@9..144,0,500;9..144,0,700;9..144,1,500&family=Manrope:wght@400;500;600;700;800&family=Shippori+Mincho:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap');
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
 
 @import 'tw-animate-css';
 
+/* lp-* / dg-* のコンポーネント CSS。ユーティリティに負けるレイヤーへ明示的に載せる。 */
+@import './styles.components.css' layer(components);
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  /* Tashinami のパレット（墨×琥珀）。ダークモードでも値は変わらない。
+     @theme inline 経由で bg-ink / text-amber-bright / border-ink-line などのユーティリティになる。 */
+  --ink: #140f0b;
+  --ink-raise: #1e1712;
+  --ink-line: rgba(214, 165, 96, 0.16);
+  --amber: #cf9247;
+  --amber-bright: #ecb972;
+  --amber-deep: #9f6329;
+  --wine: #8c4a45;
+  --rice: #ece2d0;
+  --rice-dim: #a2957f;
+
+  --jp-serif: 'Shippori Mincho', 'Fraunces', serif;
+  --jp-sans: 'Zen Kaku Gothic New', 'Manrope', sans-serif;
+  --latin: 'Fraunces', Georgia, serif;
+
   --sea-ink: #173a40;
   --sea-ink-soft: #416166;
   --lagoon: #4fb8b2;
@@ -117,8 +136,120 @@
   --sidebar-ring: oklch(0.442 0.017 285.786);
 }
 
+/* 所作（アニメーション）。tsx から animate-lp-rise のように呼ぶ。
+   同じキーフレームでも尺が違うものは別トークンにして、現状の秒数を保つ。 */
+@theme {
+  --animate-lp-rise: lp-rise 800ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-lp-reveal: lp-rise 820ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-lp-fade: lp-fade 220ms ease both;
+  --animate-lp-veil: lp-fade 320ms ease both;
+  --animate-lp-pop-in: lp-pop-in 140ms ease-out both;
+  --animate-lp-modal-in: lp-modal-in 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-lp-breathe: lp-breathe 6s ease-in-out infinite;
+  --animate-lp-float: lp-float 7s ease-in-out infinite;
+  --animate-lp-halo: lp-halo 2s ease-out 0.15s both;
+
+  @keyframes lp-rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes lp-fade {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes lp-pop-in {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* 中央寄せ（translate -50%,-50%）を内包するので、呼び出し側で translate は使わない。 */
+  @keyframes lp-modal-in {
+    from {
+      opacity: 0;
+      transform: translate(-50%, calc(-50% + 12px));
+    }
+
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  @keyframes lp-breathe {
+    0%,
+    100% {
+      opacity: 0.78;
+    }
+
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes lp-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-7px);
+    }
+  }
+
+  @keyframes lp-halo {
+    0% {
+      box-shadow:
+        0 0 0 0 rgba(238, 186, 99, 0.33),
+        0 0 0 0 rgba(208, 154, 69, 0.19);
+    }
+
+    100% {
+      box-shadow:
+        0 0 0 150px rgba(238, 186, 99, 0),
+        0 0 0 260px rgba(208, 154, 69, 0);
+    }
+  }
+}
+
 @theme inline {
   --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+
+  /* Tashinami のパレット／書体をユーティリティとして生やす。 */
+  --color-ink: var(--ink);
+  --color-ink-raise: var(--ink-raise);
+  --color-ink-line: var(--ink-line);
+  --color-amber: var(--amber);
+  --color-amber-bright: var(--amber-bright);
+  --color-amber-deep: var(--amber-deep);
+  --color-wine: var(--wine);
+  --color-rice: var(--rice);
+  --color-rice-dim: var(--rice-dim);
+  --font-jp-serif: var(--jp-serif);
+  --font-jp-sans: var(--jp-sans);
+  --font-latin: var(--latin);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -157,191 +288,105 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-html,
-body,
-#app {
-  min-height: 100%;
-}
-
-body {
-  margin: 0;
-  color: var(--sea-ink);
-  font-family: var(--font-sans);
-  background-color: var(--bg-base);
-  background:
-    radial-gradient(1100px 620px at -8% -10%, var(--hero-a), transparent 58%),
-    radial-gradient(1050px 620px at 112% -12%, var(--hero-b), transparent 62%),
-    radial-gradient(720px 380px at 50% 115%, rgba(79, 184, 178, 0.1), transparent 68%),
-    linear-gradient(180deg, color-mix(in oklab, var(--sand) 68%, white) 0%, var(--foam) 44%, var(--bg-base) 100%);
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  opacity: 0.28;
-  background:
-    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.8), transparent 34%),
-    radial-gradient(circle at 78% 26%, rgba(79, 184, 178, 0.2), transparent 42%),
-    radial-gradient(circle at 42% 82%, rgba(47, 106, 74, 0.14), transparent 36%);
-}
-
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  opacity: 0.14;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
-  background-size: 28px 28px;
-  mask-image: radial-gradient(circle at 50% 30%, black, transparent 78%);
-}
-
-a {
-  color: var(--lagoon-deep);
-  text-decoration-color: rgba(50, 143, 151, 0.4);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
-}
-
-a:hover {
-  color: #246f76;
-}
-
-code {
-  font-size: 0.9em;
-  border: 1px solid var(--line);
-  background: color-mix(in oklab, var(--surface-strong) 82%, white 18%);
-  border-radius: 7px;
-  padding: 2px 7px;
-}
-
-pre code {
-  border: 0;
-  background: transparent;
-  padding: 0;
-  border-radius: 0;
-  font-size: inherit;
-  color: inherit;
-}
-
-.prose pre {
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: #1d2e45;
-  color: #e8efff;
-}
-
-.page-wrap {
-  width: min(1080px, calc(100% - 2rem));
-  margin-inline: auto;
-}
-
-.display-title {
-  font-family: 'Fraunces', Georgia, serif;
-}
-
-.island-shell {
-  border: 1px solid var(--line);
-  background: linear-gradient(165deg, var(--surface-strong), var(--surface));
-  box-shadow:
-    0 1px 0 var(--inset-glint) inset,
-    0 22px 44px rgba(30, 90, 72, 0.1),
-    0 6px 18px rgba(23, 58, 64, 0.08);
-  backdrop-filter: blur(4px);
-}
-
-.feature-card {
-  background: linear-gradient(165deg, color-mix(in oklab, var(--surface-strong) 93%, white 7%), var(--surface));
-  box-shadow:
-    0 1px 0 var(--inset-glint) inset,
-    0 18px 34px rgba(30, 90, 72, 0.1),
-    0 4px 14px rgba(23, 58, 64, 0.06);
-}
-
-.feature-card:hover {
-  transform: translateY(-2px);
-  border-color: color-mix(in oklab, var(--lagoon-deep) 35%, var(--line));
-}
-
-button,
-.island-shell,
-a {
-  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease,
-    transform 180ms ease;
-}
-
-.island-kicker {
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  font-weight: 700;
-  font-size: 0.69rem;
-  color: var(--kicker);
-}
-
-.nav-link {
-  position: relative;
-  text-decoration: none;
-  color: var(--sea-ink-soft);
-}
-
-.nav-link::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -8px;
-  width: 100%;
-  height: 2px;
-  transform: scaleX(0);
-  transform-origin: left;
-  background: linear-gradient(90deg, var(--lagoon), #7ed3bf);
-  transition: transform 170ms ease;
-}
-
-.nav-link:hover,
-.nav-link.is-active {
-  color: var(--sea-ink);
-}
-
-.nav-link:hover::after,
-.nav-link.is-active::after {
-  transform: scaleX(1);
-}
-
-.rise-in {
-  animation: rise-in 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-@keyframes rise-in {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.site-footer {
-  border-top: 1px solid var(--line);
-  background: color-mix(in oklab, var(--header-bg) 84%, transparent 16%);
-}
-
+/* 要素そのものの下地。必ず @layer base に入れる。
+   レイヤー外に置くと a { color } のような要素ルールが
+   @layer components の .lp-* に勝ってしまい、LP のリンク色が壊れる。 */
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     background-color: var(--background);
     color: var(--foreground);
+  }
+
+  html,
+  body,
+  #app {
+    min-height: 100%;
+  }
+
+  body {
+    margin: 0;
+    color: var(--sea-ink);
+    font-family: var(--font-sans);
+    background-color: var(--bg-base);
+    background:
+      radial-gradient(1100px 620px at -8% -10%, var(--hero-a), transparent 58%),
+      radial-gradient(1050px 620px at 112% -12%, var(--hero-b), transparent 62%),
+      radial-gradient(720px 380px at 50% 115%, rgba(79, 184, 178, 0.1), transparent 68%),
+      linear-gradient(180deg, color-mix(in oklab, var(--sand) 68%, white) 0%, var(--foam) 44%, var(--bg-base) 100%);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.28;
+    background:
+      radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.8), transparent 34%),
+      radial-gradient(circle at 78% 26%, rgba(79, 184, 178, 0.2), transparent 42%),
+      radial-gradient(circle at 42% 82%, rgba(47, 106, 74, 0.14), transparent 36%);
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.14;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: radial-gradient(circle at 50% 30%, black, transparent 78%);
+  }
+
+  a {
+    color: var(--lagoon-deep);
+    text-decoration-color: rgba(50, 143, 151, 0.4);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+
+  a:hover {
+    color: #246f76;
+  }
+
+  code {
+    font-size: 0.9em;
+    border: 1px solid var(--line);
+    background: color-mix(in oklab, var(--surface-strong) 82%, white 18%);
+    border-radius: 7px;
+    padding: 2px 7px;
+  }
+
+  pre code {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+    color: inherit;
+  }
+
+  .prose pre {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #1d2e45;
+    color: #e8efff;
+  }
+
+  button,
+  a {
+    transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease,
+      transform 180ms ease;
   }
 }

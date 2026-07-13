@@ -20,11 +20,11 @@ schemas/index.ts             │     index.ts   … エンジン公開 API
 各操作は `@<操作>/<テーブル>` 形式のキーで表す。
 
 ```ts
-export const todosSchema = createSupabaseSchema({
-  "@select/todos": select({ output, select: GET_TODOS_QUERY, row }),
-  "@insert/todos": insert({ input }),
-  "@update/todos": update({ input }),
-  "@delete/todos": deleteFrom(),
+export const recordsSchema = createSupabaseSchema({
+  "@select/records": select({ output, select: GET_RECORDS_QUERY, row }),
+  "@insert/records": insert({ input }),
+  "@update/records": update({ input }),
+  "@delete/records": deleteFrom(),
 });
 ```
 
@@ -32,8 +32,8 @@ export const todosSchema = createSupabaseSchema({
 
 ```ts
 const $supabase = await $supabaseServer();
-const result = await $supabase("@select/todos", { filter: (q) => q.order("created_at") });
-//                              ^^^^^^^^^^^^^^ タイポはコンパイルエラー
+const result = await $supabase("@select/records", { filter: (q) => q.order("drunk_at") });
+//                              ^^^^^^^^^^^^^^^^ タイポはコンパイルエラー
 ```
 
 戻り値は常に `Result<T, SupabaseError>`（neverthrow）。`result.unwrapOr([])` / `result.isErr()` / `result.match(...)` で扱う。
@@ -44,18 +44,19 @@ DB の全カラムを表す **EntitySchema** を定義し、レスポンスは�
 
 ```ts
 // 全カラム
-export const TodoEntitySchema = z.object({
-  id, title, completed, created_at, updated_at, category_id,
+export const RecordEntitySchema = z.object({
+  id, user_id, name, category_id, rating, is_favorite, memo, place_name, drunk_at, created_at, ...
 });
 
 // レスポンス: フラット列を pick + 関連を extend + camelCase に transform
-export const TodoResponseSchema = TodoEntitySchema.pick({
-  id: true, title: true, completed: true, created_at: true,
+export const RecordResponseSchema = RecordEntitySchema.pick({
+  id: true, name: true, rating: true, is_favorite: true, drunk_at: true,
 })
-  .extend({ category: CategorySchema.nullable() })
-  .transform((row) => ({ ...row, createdAt: row.created_at }));
+  .extend({ category: CategoryRefSchema.nullable() })
+  .transform((row) => ({ ...row, isFavorite: row.is_favorite, drunkAt: row.drunk_at }));
 
-export type Todo = z.infer<typeof TodoResponseSchema>; // camelCase + ネスト
+// TS 組み込みの Record と衝突しないよう DrinkRecord とする。
+export type DrinkRecord = z.infer<typeof RecordResponseSchema>; // camelCase + ネスト
 ```
 
 ## 型安全の要：入力と出力の分離
@@ -64,17 +65,17 @@ export type Todo = z.infer<typeof TodoResponseSchema>; // camelCase + ネスト
 
 | 用途 | 型ソース | 例 |
 |---|---|---|
-| 戻り値の型 | `z.output<Schema>`（変換後） | `todo.createdAt`（camelCase） |
-| filter のカラム型 | `select({ row })` の行型（変換前 ＝ 実 DB カラム） | `q.order("created_at")`（snake_case） |
+| 戻り値の型 | `z.output<Schema>`（変換後） | `record.drunkAt`（camelCase） |
+| filter のカラム型 | `select({ row })` の行型（変換前 ＝ 実 DB カラム） | `q.order("drunk_at")`（snake_case） |
 
 この分離のおかげで、**`.transform()` で camelCase 化しても filter のカラム安全性が壊れない**。
 
 ```ts
-$supabase("@select/todos", {
+$supabase("@select/records", {
   filter: (q) =>
     q.eq("category_id", id)        // ✅ row（実テーブル）由来。response に無くても OK
-     .order("created_at"),         // ✅ snake_case
-  //  .order("createdAt")          // ❌ コンパイルエラー
+     .order("drunk_at"),           // ✅ snake_case
+  //  .order("drunkAt")            // ❌ コンパイルエラー
 });
 ```
 
@@ -86,26 +87,26 @@ $supabase("@select/todos", {
 
 ```ts
 // 取得クエリに埋め込みを書く
-export const GET_TODOS_QUERY =
-  "id, title, completed, created_at, category:categories(id, name)";
+export const GET_RECORDS_QUERY =
+  "id, name, rating, is_favorite, drunk_at, category:categories(id, name)";
 
 // レスポンススキーマをネスト構造にする → 戻り値の型もネストして付く
-.extend({ category: CategorySchema.nullable() })
+.extend({ category: CategoryRefSchema.nullable() })
 ```
 
 - **読み取り**（関連データの表示）: 上記で型付きのまま通る。
-- **絞り込み**: `select({ row: TodoEntitySchema })` を渡すことで、レスポンスに含めない外部キー（`category_id`）でも filter が型付けされる。
+- **絞り込み**: `select({ row: RecordEntitySchema })` を渡すことで、レスポンスに含めない外部キー（`category_id`）でも filter が型付けされる。
 
 ## 書き込みの `match`（update / delete）
 
 `update`/`deleteFrom` に `row`（実テーブルの全カラム）を渡すと、`match` が `Partial<Row>` で型付けされる。カラム名のタイポや値の型違いはコンパイルエラーになる。
 
 ```ts
-"@update/todos": update({ input, row: TodoEntitySchema }),
-"@delete/todos": deleteFrom({ row: TodoEntitySchema }),
+"@update/records": update({ input, row: RecordEntitySchema }),
+"@delete/records": deleteFrom({ row: RecordEntitySchema }),
 
-$supabase("@update/todos", { data: { completed: true }, match: { id } });
-//                                                       match: { idd: id }  ❌ コンパイルエラー
+$supabase("@update/records", { data: { is_favorite: true }, match: { id } });
+//                                                          match: { idd: id }  ❌ コンパイルエラー
 ```
 
 `row` 省略時は `match: Record<string, unknown>`（型なし）にフォールバックする。新規リソースでは `row` を渡すのを既定にする。

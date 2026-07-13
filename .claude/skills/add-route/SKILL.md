@@ -15,10 +15,15 @@ TanStack Start のファイルベースルーティング規約と、このテ�
 
 ## 守るべき規約（要点）
 
-1. **ファイルは `src/routes/` に平置き**。深い階層は掘らない。
-   - URL `/about` → `src/routes/about.tsx`、`/settings/profile` → `src/routes/settings.profile.tsx`（ドット区切り）。
-   - 動的セグメントは `$` 接頭辞: `/todos/$id` → `src/routes/todos.$id.tsx`。
-   - レイアウト共有が要る場合のみフォルダ＋`route.tsx`。まずは平置きで足りる。
+1. **単独ページは平置き、子を持つセグメントはディレクトリ**。
+   - 子のないページは平置き: URL `/about` → `src/routes/about.tsx`。
+   - 動的セグメントは `$` 接頭辞: `/drinks/$slug` → `src/routes/drinks/$slug.tsx`。
+   - 同じセグメントの下にページが 2 つ以上できたらディレクトリに切る（ドット区切りで伸ばさない）。
+     `/records` `/records/new` `/records/$recordId/edit` →
+     `src/routes/_authed/records/{index,new}.tsx` ＋ `records/$recordId/edit.tsx`。
+   - ドット区切りとディレクトリは**同じルート ID に展開される**（`records.new.tsx` と `records/new.tsx` はどちらも `/records/new`）。
+     移行は「ファイル移動 → `bun run generate-routes`」だけで済み、`createFileRoute` の文字列も URL も変わらない。
+   - レイアウト共有が要る場合はフォルダ＋`route.tsx`（例: `_authed/route.tsx`）。
    - `routeTree.gen.ts` は **自動生成**。手で触らない（`bun run generate-routes` / dev / build が再生成する）。
 
 2. **route は薄く**。`createFileRoute` に載せるのは loader（fetch 起動）と画面シェルのみ。
