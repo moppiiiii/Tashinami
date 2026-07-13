@@ -1,10 +1,26 @@
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { NotebookPen } from "lucide-react";
+import { useStore } from "@tanstack/react-store";
+import { Plus } from "lucide-react";
 
+import { RecentPours } from "@/components/records/recent-pours";
+import { RecordList } from "@/components/records/record-list";
+import { RecordReveal } from "@/components/records/record-reveal";
+import { clearReveal, revealStore } from "@/components/records/reveal-store";
+import { ShelfStats } from "@/components/records/shelf-stats";
 import { useSignOut } from "@/hooks/use-sign-out";
+import { categoriesQueryOptions } from "@/server/categories";
+import { recordsQueryOptions } from "@/server/records";
 
-// ホーム。API は叩かず、_authed ガードが用意した user を表示するだけの簡易画面。
+// ホーム（棚）。直近の一杯を並べ、全一覧は /records へ。記録は /records/new。
+// 保存後はここへ着地し、出会いのリヴィールが灯る（reveal-store 経由）。
+// loader で records / categories を prefetch する。
 export const Route = createFileRoute("/_authed/home")({
+  loader: ({ context }) =>
+    Promise.all([
+      context.queryClient.ensureQueryData(recordsQueryOptions()),
+      context.queryClient.ensureQueryData(categoriesQueryOptions()),
+    ]),
   component: HomePage,
 });
 
@@ -13,6 +29,11 @@ function HomePage() {
   const { user } = Route.useRouteContext();
   const navigate = useNavigate();
   const signOut = useSignOut();
+  const { data: records } = useSuspenseQuery(recordsQueryOptions());
+  const { data: categories } = useSuspenseQuery(categoriesQueryOptions());
+  const reveal = useStore(revealStore);
+
+  const recent = records.slice(0, 5);
 
   return (
     <main className="tashinami-lp min-h-dvh">
@@ -24,44 +45,67 @@ function HomePage() {
             </span>
             <span className="lp-eyebrow">Tashinami</span>
           </Link>
-          <button
-            type="button"
-            className="lp-ghost text-sm"
-            disabled={signOut.isPending}
-            onClick={() =>
-              signOut.mutate(undefined, {
-                onSuccess: () => navigate({ to: "/login" }),
-              })
-            }
-          >
-            {signOut.isPending ? "ログアウト中…" : "ログアウト"}
-          </button>
+          <div className="flex items-center gap-2">
+            <Link to="/zukan" className="lp-ghost text-sm no-underline">
+              図鑑
+            </Link>
+            <button
+              type="button"
+              className="lp-ghost text-sm"
+              disabled={signOut.isPending}
+              onClick={() =>
+                signOut.mutate(undefined, {
+                  onSuccess: () => navigate({ to: "/login" }),
+                })
+              }
+            >
+              {signOut.isPending ? "ログアウト中…" : "ログアウト"}
+            </button>
+          </div>
         </header>
 
         <section className="lp-rise py-12 md:py-16">
-          <p className="lp-kicker text-base">おかえりなさい。</p>
-          <h1 className="lp-serif mt-1 text-3xl md:text-4xl">
-            {user.email} さんの棚
-          </h1>
-          <p className="lp-dim mt-3 max-w-md leading-relaxed">
-            今夜の一杯を、静かに残していきましょう。
-          </p>
-
-          {/* 記録がまだ無いときの空状態（ダミー） */}
-          <div className="lp-card mt-8 p-8 text-center">
-            <span className="lp-chip mx-auto mb-4 flex size-12 items-center justify-center rounded-full p-0">
-              <NotebookPen size={20} />
-            </span>
-            <h2 className="lp-serif text-lg">まだ、一杯も注がれていません。</h2>
-            <p className="lp-dim mt-2 text-sm">
-              最初の一杯を記録すると、ここに棚ができあがります。
-            </p>
-            <button type="button" className="lp-cta mt-6" disabled>
-              一杯を記録する（準備中）
-            </button>
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="lp-kicker text-base">おかえりなさい。</p>
+              <h1 className="lp-serif mt-1 text-3xl md:text-4xl">
+                {user.email} さんの棚
+              </h1>
+              <p className="lp-dim mt-3 max-w-md leading-relaxed">
+                今夜の一杯を、静かに残していきましょう。
+              </p>
+            </div>
+            <Link to="/records/new" className="lp-cta shrink-0 no-underline">
+              <Plus size={18} />
+              一杯を記録する
+            </Link>
           </div>
+
+          {records.length > 0 ? (
+            <>
+              <div className="mt-10">
+                <ShelfStats records={records} />
+              </div>
+
+              <div className="mt-12">
+                <div className="mb-6 flex items-baseline justify-between">
+                  <h2 className="lp-serif text-xl">最近の一杯</h2>
+                  <Link to="/records" className="lp-amber text-sm no-underline">
+                    すべて見る →
+                  </Link>
+                </div>
+                <RecentPours records={recent} categories={categories} />
+              </div>
+            </>
+          ) : (
+            <div className="mt-10">
+              <RecordList records={recent} />
+            </div>
+          )}
         </section>
       </div>
+
+      <RecordReveal result={reveal} onClose={clearReveal} />
     </main>
   );
 }
