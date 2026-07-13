@@ -1,6 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
+import { AppFooter } from "@/components/layout/app-footer";
 import { AuthedHeader } from "@/components/layout/authed-header";
 import { RecordsBrowser } from "@/components/records/records-browser";
 import { categoriesQueryOptions } from "@/server/categories";
@@ -26,9 +27,11 @@ function RecordsPage() {
       <div className="mx-auto w-full max-w-4xl px-6">
         <AuthedHeader />
 
-        <section className="lp-rise py-8 md:py-12">
+        <section className="animate-lp-rise py-8 motion-reduce:animate-none md:py-12">
           <RecordsBrowser records={records} categories={categories} />
         </section>
+
+        <AppFooter />
       </div>
     </main>
   );

@@ -1,6 +1,10 @@
 import { useForm } from "@tanstack/react-form";
 import { Link, useNavigate } from "@tanstack/react-router";
 
+import { Button } from "@/components/common/button";
+import { Card } from "@/components/common/card";
+import { Field, FieldError, Label } from "@/components/common/field";
+import { Input } from "@/components/common/input";
 import { useSignIn } from "@/hooks/use-sign-in";
 import { CredentialsSchema } from "@/schemas/auth";
 
@@ -26,23 +30,29 @@ export function LoginForm({ redirectTo }: { redirectTo?: string }) {
 
   return (
     <main className="tashinami-lp flex min-h-dvh flex-col items-center justify-center px-6 py-12">
-      <div className="lp-rise w-full max-w-md">
+      <div className="animate-lp-rise w-full max-w-md motion-reduce:animate-none">
         <div className="mb-8 text-center">
           <Link
             to="/"
             className="inline-flex items-baseline gap-2 no-underline"
           >
-            <span className="lp-serif text-2xl text-[color:var(--rice)]">
+            <span className="font-jp-serif text-2xl font-semibold text-[color:var(--rice)]">
               嗜み
             </span>
-            <span className="lp-eyebrow">Tashinami</span>
+            <span className="text-rice-dim text-[0.68rem] font-bold tracking-[0.28em] uppercase">
+              Tashinami
+            </span>
           </Link>
         </div>
 
-        <div className="lp-card p-8">
-          <p className="lp-kicker text-base">おかえりなさい。</p>
-          <h1 className="lp-serif mt-1 text-2xl">ただいまの、一杯へ。</h1>
-          <p className="lp-dim mt-2 text-sm">
+        <Card className="p-8">
+          <p className="font-latin text-amber-bright text-base tracking-[0.01em] italic">
+            おかえりなさい。
+          </p>
+          <h1 className="font-jp-serif mt-1 text-2xl font-semibold">
+            ただいまの、一杯へ。
+          </h1>
+          <p className="text-rice-dim mt-2 text-sm">
             メールアドレスでログインして、記録のつづきを。
           </p>
 
@@ -55,16 +65,13 @@ export function LoginForm({ redirectTo }: { redirectTo?: string }) {
           >
             <form.Field name="email">
               {(field) => (
-                <div className="lp-field">
-                  <label htmlFor={field.name} className="lp-label">
-                    メールアドレス
-                  </label>
-                  <input
+                <Field>
+                  <Label htmlFor={field.name}>メールアドレス</Label>
+                  <Input
                     id={field.name}
                     name={field.name}
                     type="email"
                     autoComplete="email"
-                    className="lp-input"
                     placeholder="you@example.com"
                     value={field.state.value}
                     onBlur={field.handleBlur}
@@ -73,22 +80,19 @@ export function LoginForm({ redirectTo }: { redirectTo?: string }) {
                     required
                   />
                   <FieldError errors={field.state.meta.errors} />
-                </div>
+                </Field>
               )}
             </form.Field>
 
             <form.Field name="password">
               {(field) => (
-                <div className="lp-field">
-                  <label htmlFor={field.name} className="lp-label">
-                    パスワード
-                  </label>
-                  <input
+                <Field>
+                  <Label htmlFor={field.name}>パスワード</Label>
+                  <Input
                     id={field.name}
                     name={field.name}
                     type="password"
                     autoComplete="current-password"
-                    className="lp-input"
                     placeholder="••••••••"
                     value={field.state.value}
                     onBlur={field.handleBlur}
@@ -97,53 +101,32 @@ export function LoginForm({ redirectTo }: { redirectTo?: string }) {
                     required
                   />
                   <FieldError errors={field.state.meta.errors} />
-                </div>
+                </Field>
               )}
             </form.Field>
 
-            {authError ? (
-              <p className="lp-error" role="alert">
-                {authError.message}
-              </p>
-            ) : null}
+            {authError ? <FieldError errors={[authError.message]} /> : null}
 
             <form.Subscribe selector={(s) => s.isSubmitting}>
               {(isSubmitting) => (
-                <button
+                <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="lp-cta mt-2 w-full justify-center"
+                  className="mt-2 w-full justify-center"
                 >
                   ログイン
-                </button>
+                </Button>
               )}
             </form.Subscribe>
           </form>
-        </div>
+        </Card>
 
         <p className="mt-6 text-center text-sm">
-          <Link to="/" className="lp-amber no-underline">
+          <Link to="/" className="text-amber-bright no-underline">
             ← トップに戻る
           </Link>
         </p>
       </div>
     </main>
-  );
-}
-
-// フィールド検証エラー（zod の issue）を 1 行で表示する小さなヘルパー。
-function FieldError({
-  errors,
-}: {
-  errors: ReadonlyArray<{ message?: string } | undefined>;
-}) {
-  if (errors.length === 0) return null;
-  return (
-    <p className="lp-error" role="alert">
-      {errors
-        .map((e) => e?.message)
-        .filter(Boolean)
-        .join(", ")}
-    </p>
   );
 }

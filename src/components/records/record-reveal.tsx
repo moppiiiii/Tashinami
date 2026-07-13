@@ -1,17 +1,29 @@
-import { useEffect } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
+import { Button } from "@/components/common/button";
 import { DrinkImage } from "@/components/zukan/drink-image";
 import { accentForSlug } from "@/components/zukan/encounters";
+import { useSaveTopDrinks } from "@/hooks/use-save-top-drinks";
+import { TOP_DRINKS_LIMIT } from "@/schemas/top-drinks";
+import { topDrinksQueryOptions } from "@/server/top-drinks";
 
-// 保存の一瞬に灯す演出の中身。初回は「初めての出会い」、既知は「N杯目の再会」。
+// 初回は「初めての出会い」、既知は「N杯目の再会」。
 export type RevealResult = {
+  key: string; // 正規化した銘柄キー（殿堂の席と突き合わせる）
   name: string;
   categoryName: string | null;
   categorySlug: string | null;
   isFirst: boolean;
   revisit: number; // 何杯目か（今回を含む）
+  rating: number | null;
 };
+
+// ここから上の印象なら、殿堂に誘う。
+// 「点を付ける」と「席を選ぶ」が別の行為だと、説明ではなく操作で伝える場所（docs/concept.md §5）。
+const INVITE_FROM = 8.5;
 
 export function RecordReveal({
   result,
@@ -20,8 +32,13 @@ export function RecordReveal({
   result: RevealResult | null;
   onClose: () => void;
 }) {
+  const { data: items } = useSuspenseQuery(topDrinksQueryOptions());
+  const save = useSaveTopDrinks();
+  const [added, setAdded] = useState(false);
+
   useEffect(() => {
     if (!result) return;
+    setAdded(false);
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
@@ -30,6 +47,16 @@ export function RecordReveal({
   }, [result, onClose]);
 
   if (typeof document === "undefined" || !result) return null;
+
+  const seat = items.findIndex((i) => i.key === result.key);
+  const full = items.length >= TOP_DRINKS_LIMIT;
+  const invited =
+    seat < 0 && result.rating != null && result.rating >= INVITE_FROM;
+
+  const enshrine = () => {
+    save.mutate([...items, { key: result.key, name: result.name }]);
+    setAdded(true);
+  };
 
   const { isFirst } = result;
   const accent = accentForSlug(result.categorySlug);
@@ -75,7 +102,7 @@ export function RecordReveal({
         </p>
 
         <h2
-          className="lp-reveal-item lp-serif mt-5 text-3xl leading-tight text-balance md:text-4xl"
+          className="lp-reveal-item font-jp-serif mt-5 text-3xl leading-tight font-semibold text-balance md:text-4xl"
           style={{ animationDelay: "0.46s" }}
         >
           {result.name}
@@ -83,7 +110,7 @@ export function RecordReveal({
 
         {result.categoryName ? (
           <p
-            className="lp-reveal-item lp-eyebrow mt-4"
+            className="lp-reveal-item text-rice-dim mt-4 text-[0.68rem] font-bold tracking-[0.28em] uppercase"
             style={{ animationDelay: "0.62s" }}
           >
             {result.categoryName}
@@ -91,24 +118,68 @@ export function RecordReveal({
         ) : null}
 
         <p
-          className="lp-reveal-item lp-serif lp-dim mx-auto mt-6 max-w-xs text-base leading-loose"
+          className="lp-reveal-item font-jp-serif text-rice-dim mx-auto mt-6 max-w-xs text-base leading-loose font-semibold"
           style={{ animationDelay: "0.82s" }}
         >
           {copy}
         </p>
 
+        {/* 殿堂への誘い。高い印象は「招待状」であって、席そのものではない。 */}
         <div
-          className="lp-reveal-item mt-8"
+          className="lp-reveal-item mt-8 flex flex-col items-center gap-3"
           style={{ animationDelay: "1.05s" }}
         >
-          <button
-            type="button"
-            autoFocus
-            onClick={onClose}
-            className="lp-ghost"
-          >
-            閉じる
-          </button>
+          {added ? (
+            <p className="text-amber-bright font-jp-serif text-base font-semibold">
+              殿堂 {items.length} 位に、席をひとつ。
+            </p>
+          ) : seat >= 0 ? (
+            <p className="text-rice-dim text-sm">
+              殿堂 {seat + 1} 位の一杯です。
+            </p>
+          ) : invited && !full ? (
+            <>
+              <p className="text-rice-dim text-sm">
+                この一杯を、殿堂に置きますか。
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  autoFocus
+                  disabled={save.isPending}
+                  onClick={enshrine}
+                >
+                  殿堂に入れる
+                </Button>
+                <Button variant="ghost" type="button" onClick={onClose}>
+                  今はやめる
+                </Button>
+              </div>
+            </>
+          ) : invited && full ? (
+            <p className="text-rice-dim text-sm">
+              殿堂は満席です。
+              <Link
+                to="/top10"
+                className="text-amber-bright mx-1"
+                onClick={onClose}
+              >
+                TOP10
+              </Link>
+              で入れ替えられます。
+            </p>
+          ) : null}
+
+          {added || seat >= 0 || !invited || full ? (
+            <Button
+              variant="ghost"
+              type="button"
+              autoFocus={!invited || full || seat >= 0}
+              onClick={onClose}
+            >
+              閉じる
+            </Button>
+          ) : null}
         </div>
       </div>
     </div>,

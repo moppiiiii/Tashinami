@@ -1,15 +1,67 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { describe, expect, it } from "vitest";
-
-import { GET_TODOS_QUERY, todosSchema } from "@/schemas/todos";
+import * as z from "zod";
 
 import {
   createSupabaseClient,
+  createSupabaseSchema,
+  deleteFrom,
+  insert,
+  select,
   SupabaseQueryError,
   SupabaseValidationError,
+  update,
 } from "./query";
 
 const UUID = "00000000-0000-0000-0000-000000000000";
+
+// エンジン単体のフィクスチャ。アプリのスキーマ（records 等）に依存させないため、
+// embed・transform・row 型付けを一通り持つ最小のテーブルをここで組み立てる。
+const TodoEntitySchema = z.object({
+  id: z.string().uuid(),
+  title: z.string(),
+  completed: z.boolean(),
+  created_at: z.string(),
+  updated_at: z.string(),
+  category_id: z.string().uuid().nullable(),
+});
+
+const GET_TODOS_QUERY =
+  "id, title, completed, created_at, category:categories(id, name)";
+
+const TodoResponseSchema = TodoEntitySchema.pick({
+  id: true,
+  title: true,
+  completed: true,
+  created_at: true,
+})
+  .extend({
+    category: z.object({ id: z.string().uuid(), name: z.string() }).nullable(),
+  })
+  .transform((row) => ({
+    id: row.id,
+    title: row.title,
+    completed: row.completed,
+    createdAt: row.created_at,
+    category: row.category,
+  }));
+
+const todosSchema = createSupabaseSchema({
+  "@select/todos": select({
+    output: z.array(TodoResponseSchema),
+    select: GET_TODOS_QUERY,
+    row: TodoEntitySchema,
+  }),
+  "@insert/todos": insert({ input: z.object({ title: z.string().min(1) }) }),
+  "@update/todos": update({
+    input: z.object({
+      title: z.string().min(1).optional(),
+      completed: z.boolean().optional(),
+    }),
+    row: TodoEntitySchema,
+  }),
+  "@delete/todos": deleteFrom({ row: TodoEntitySchema }),
+});
 
 type QueryResult = { data: unknown; error: unknown };
 type Call = { method: string; args: unknown[] };

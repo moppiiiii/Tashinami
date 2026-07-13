@@ -14,14 +14,18 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as CreatorRouteImport } from './routes/creator'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ConceptRouteImport } from './routes/concept'
 import { Route as AuthedRouteRouteImport } from './routes/_authed/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DrinksIndexRouteImport } from './routes/drinks/index'
 import { Route as DrinksSlugRouteImport } from './routes/drinks/$slug'
 import { Route as AuthedZukanRouteImport } from './routes/_authed/zukan'
+import { Route as AuthedTop10RouteImport } from './routes/_authed/top10'
 import { Route as AuthedHomeRouteImport } from './routes/_authed/home'
 import { Route as AuthedRecordsIndexRouteImport } from './routes/_authed/records/index'
+import { Route as AuthedPlacesIndexRouteImport } from './routes/_authed/places/index'
 import { Route as AuthedRecordsNewRouteImport } from './routes/_authed/records/new'
+import { Route as AuthedPlacesPlaceKeyRouteImport } from './routes/_authed/places/$placeKey'
 import { Route as AuthedRecordsRecordIdEditRouteImport } from './routes/_authed/records/$recordId/edit'
 
 const TermsRoute = TermsRouteImport.update({
@@ -49,6 +53,11 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConceptRoute = ConceptRouteImport.update({
+  id: '/concept',
+  path: '/concept',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthedRouteRoute = AuthedRouteRouteImport.update({
   id: '/_authed',
   getParentRoute: () => rootRouteImport,
@@ -73,6 +82,11 @@ const AuthedZukanRoute = AuthedZukanRouteImport.update({
   path: '/zukan',
   getParentRoute: () => AuthedRouteRoute,
 } as any)
+const AuthedTop10Route = AuthedTop10RouteImport.update({
+  id: '/top10',
+  path: '/top10',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
 const AuthedHomeRoute = AuthedHomeRouteImport.update({
   id: '/home',
   path: '/home',
@@ -83,9 +97,19 @@ const AuthedRecordsIndexRoute = AuthedRecordsIndexRouteImport.update({
   path: '/records/',
   getParentRoute: () => AuthedRouteRoute,
 } as any)
+const AuthedPlacesIndexRoute = AuthedPlacesIndexRouteImport.update({
+  id: '/places/',
+  path: '/places/',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
 const AuthedRecordsNewRoute = AuthedRecordsNewRouteImport.update({
   id: '/records/new',
   path: '/records/new',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedPlacesPlaceKeyRoute = AuthedPlacesPlaceKeyRouteImport.update({
+  id: '/places/$placeKey',
+  path: '/places/$placeKey',
   getParentRoute: () => AuthedRouteRoute,
 } as any)
 const AuthedRecordsRecordIdEditRoute =
@@ -97,31 +121,39 @@ const AuthedRecordsRecordIdEditRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/concept': typeof ConceptRoute
   '/contact': typeof ContactRoute
   '/creator': typeof CreatorRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/home': typeof AuthedHomeRoute
+  '/top10': typeof AuthedTop10Route
   '/zukan': typeof AuthedZukanRoute
   '/drinks/$slug': typeof DrinksSlugRoute
   '/drinks/': typeof DrinksIndexRoute
+  '/places/$placeKey': typeof AuthedPlacesPlaceKeyRoute
   '/records/new': typeof AuthedRecordsNewRoute
+  '/places/': typeof AuthedPlacesIndexRoute
   '/records/': typeof AuthedRecordsIndexRoute
   '/records/$recordId/edit': typeof AuthedRecordsRecordIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/concept': typeof ConceptRoute
   '/contact': typeof ContactRoute
   '/creator': typeof CreatorRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/home': typeof AuthedHomeRoute
+  '/top10': typeof AuthedTop10Route
   '/zukan': typeof AuthedZukanRoute
   '/drinks/$slug': typeof DrinksSlugRoute
   '/drinks': typeof DrinksIndexRoute
+  '/places/$placeKey': typeof AuthedPlacesPlaceKeyRoute
   '/records/new': typeof AuthedRecordsNewRoute
+  '/places': typeof AuthedPlacesIndexRoute
   '/records': typeof AuthedRecordsIndexRoute
   '/records/$recordId/edit': typeof AuthedRecordsRecordIdEditRoute
 }
@@ -129,16 +161,20 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authed': typeof AuthedRouteRouteWithChildren
+  '/concept': typeof ConceptRoute
   '/contact': typeof ContactRoute
   '/creator': typeof CreatorRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
   '/_authed/home': typeof AuthedHomeRoute
+  '/_authed/top10': typeof AuthedTop10Route
   '/_authed/zukan': typeof AuthedZukanRoute
   '/drinks/$slug': typeof DrinksSlugRoute
   '/drinks/': typeof DrinksIndexRoute
+  '/_authed/places/$placeKey': typeof AuthedPlacesPlaceKeyRoute
   '/_authed/records/new': typeof AuthedRecordsNewRoute
+  '/_authed/places/': typeof AuthedPlacesIndexRoute
   '/_authed/records/': typeof AuthedRecordsIndexRoute
   '/_authed/records/$recordId/edit': typeof AuthedRecordsRecordIdEditRoute
 }
@@ -146,47 +182,59 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/concept'
     | '/contact'
     | '/creator'
     | '/login'
     | '/privacy'
     | '/terms'
     | '/home'
+    | '/top10'
     | '/zukan'
     | '/drinks/$slug'
     | '/drinks/'
+    | '/places/$placeKey'
     | '/records/new'
+    | '/places/'
     | '/records/'
     | '/records/$recordId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/concept'
     | '/contact'
     | '/creator'
     | '/login'
     | '/privacy'
     | '/terms'
     | '/home'
+    | '/top10'
     | '/zukan'
     | '/drinks/$slug'
     | '/drinks'
+    | '/places/$placeKey'
     | '/records/new'
+    | '/places'
     | '/records'
     | '/records/$recordId/edit'
   id:
     | '__root__'
     | '/'
     | '/_authed'
+    | '/concept'
     | '/contact'
     | '/creator'
     | '/login'
     | '/privacy'
     | '/terms'
     | '/_authed/home'
+    | '/_authed/top10'
     | '/_authed/zukan'
     | '/drinks/$slug'
     | '/drinks/'
+    | '/_authed/places/$placeKey'
     | '/_authed/records/new'
+    | '/_authed/places/'
     | '/_authed/records/'
     | '/_authed/records/$recordId/edit'
   fileRoutesById: FileRoutesById
@@ -194,6 +242,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthedRouteRoute: typeof AuthedRouteRouteWithChildren
+  ConceptRoute: typeof ConceptRoute
   ContactRoute: typeof ContactRoute
   CreatorRoute: typeof CreatorRoute
   LoginRoute: typeof LoginRoute
@@ -240,6 +289,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/concept': {
+      id: '/concept'
+      path: '/concept'
+      fullPath: '/concept'
+      preLoaderRoute: typeof ConceptRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authed': {
       id: '/_authed'
       path: ''
@@ -275,6 +331,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedZukanRouteImport
       parentRoute: typeof AuthedRouteRoute
     }
+    '/_authed/top10': {
+      id: '/_authed/top10'
+      path: '/top10'
+      fullPath: '/top10'
+      preLoaderRoute: typeof AuthedTop10RouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
     '/_authed/home': {
       id: '/_authed/home'
       path: '/home'
@@ -289,11 +352,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedRecordsIndexRouteImport
       parentRoute: typeof AuthedRouteRoute
     }
+    '/_authed/places/': {
+      id: '/_authed/places/'
+      path: '/places'
+      fullPath: '/places/'
+      preLoaderRoute: typeof AuthedPlacesIndexRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
     '/_authed/records/new': {
       id: '/_authed/records/new'
       path: '/records/new'
       fullPath: '/records/new'
       preLoaderRoute: typeof AuthedRecordsNewRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/places/$placeKey': {
+      id: '/_authed/places/$placeKey'
+      path: '/places/$placeKey'
+      fullPath: '/places/$placeKey'
+      preLoaderRoute: typeof AuthedPlacesPlaceKeyRouteImport
       parentRoute: typeof AuthedRouteRoute
     }
     '/_authed/records/$recordId/edit': {
@@ -308,16 +385,22 @@ declare module '@tanstack/react-router' {
 
 interface AuthedRouteRouteChildren {
   AuthedHomeRoute: typeof AuthedHomeRoute
+  AuthedTop10Route: typeof AuthedTop10Route
   AuthedZukanRoute: typeof AuthedZukanRoute
+  AuthedPlacesPlaceKeyRoute: typeof AuthedPlacesPlaceKeyRoute
   AuthedRecordsNewRoute: typeof AuthedRecordsNewRoute
+  AuthedPlacesIndexRoute: typeof AuthedPlacesIndexRoute
   AuthedRecordsIndexRoute: typeof AuthedRecordsIndexRoute
   AuthedRecordsRecordIdEditRoute: typeof AuthedRecordsRecordIdEditRoute
 }
 
 const AuthedRouteRouteChildren: AuthedRouteRouteChildren = {
   AuthedHomeRoute: AuthedHomeRoute,
+  AuthedTop10Route: AuthedTop10Route,
   AuthedZukanRoute: AuthedZukanRoute,
+  AuthedPlacesPlaceKeyRoute: AuthedPlacesPlaceKeyRoute,
   AuthedRecordsNewRoute: AuthedRecordsNewRoute,
+  AuthedPlacesIndexRoute: AuthedPlacesIndexRoute,
   AuthedRecordsIndexRoute: AuthedRecordsIndexRoute,
   AuthedRecordsRecordIdEditRoute: AuthedRecordsRecordIdEditRoute,
 }
@@ -329,6 +412,7 @@ const AuthedRouteRouteWithChildren = AuthedRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthedRouteRoute: AuthedRouteRouteWithChildren,
+  ConceptRoute: ConceptRoute,
   ContactRoute: ContactRoute,
   CreatorRoute: CreatorRoute,
   LoginRoute: LoginRoute,

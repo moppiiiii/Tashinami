@@ -1,5 +1,5 @@
 {
-  "name": "fe-template",
+  "name": "Tashinami",
   "private": true,
   "type": "module",
   "scripts": {
@@ -42,6 +42,7 @@
     "neverthrow": "^8.2.0",
     "radix-ui": "^1.6.0",
     "react": "^19.2.0",
+    "react-day-picker": "^10.0.1",
     "react-dom": "^19.2.0",
     "react-markdown": "^10.1.0",
     "tailwind-merge": "^3.0.2",

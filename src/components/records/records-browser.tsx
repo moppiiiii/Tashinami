@@ -1,6 +1,9 @@
 import { Heart, Search } from "lucide-react";
 import { type ReactNode, useMemo, useState } from "react";
 
+import { Button } from "@/components/common/button";
+import { Card } from "@/components/common/card";
+import { Input } from "@/components/common/input";
 import type { Category } from "@/schemas/categories";
 import type { DrinkRecord } from "@/schemas/records";
 
@@ -18,7 +21,6 @@ export function RecordsBrowser({
   const [categoryId, setCategoryId] = useState<string>("all"); // "all" | id | "none"
   const [favOnly, setFavOnly] = useState(false);
 
-  // 記録に現れるカテゴリだけをチップに出す。
   const presentCategories = useMemo(() => {
     const ids = new Set(
       records.map((r) => r.category?.id).filter((v): v is string => Boolean(v)),
@@ -44,7 +46,6 @@ export function RecordsBrowser({
     });
   }, [records, query, categoryId, favOnly]);
 
-  // 記録がまだ 1 件も無いときは棚の招待（RecordList の空状態）に任せる。
   if (records.length === 0) {
     return <RecordList records={records} categories={categories} />;
   }
@@ -58,8 +59,10 @@ export function RecordsBrowser({
   return (
     <div>
       <div className="mb-6 flex items-baseline justify-between gap-4">
-        <h1 className="lp-serif text-2xl md:text-3xl">これまでの一杯</h1>
-        <span className="lp-dim text-sm tabular-nums">
+        <h1 className="font-jp-serif text-2xl font-semibold md:text-3xl">
+          これまでの一杯
+        </h1>
+        <span className="text-rice-dim text-sm tabular-nums">
           {filtered.length} / {records.length} 杯
         </span>
       </div>
@@ -68,10 +71,10 @@ export function RecordsBrowser({
         <div className="relative">
           <Search
             size={16}
-            className="lp-dim pointer-events-none absolute top-1/2 left-3 -translate-y-1/2"
+            className="text-rice-dim pointer-events-none absolute top-1/2 left-3 -translate-y-1/2"
           />
-          <input
-            className="lp-input pl-9"
+          <Input
+            className="pl-9"
             placeholder="銘柄・場所・メモで探す"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -111,16 +114,19 @@ export function RecordsBrowser({
       </div>
 
       {filtered.length === 0 ? (
-        <div className="lp-card px-6 py-12 text-center">
-          <p className="lp-serif text-base">条件に合う一杯がありません。</p>
-          <button
+        <Card className="px-6 py-12 text-center">
+          <p className="font-jp-serif text-base font-semibold">
+            条件に合う一杯がありません。
+          </p>
+          <Button
+            variant="ghost"
             type="button"
-            className="lp-ghost mt-4 text-sm"
+            className="mt-4 text-sm"
             onClick={reset}
           >
             絞り込みを解除
-          </button>
-        </div>
+          </Button>
+        </Card>
       ) : (
         <RecordList records={filtered} categories={categories} />
       )}

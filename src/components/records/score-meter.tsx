@@ -1,13 +1,12 @@
-// 評価は 5 段階。LP と同じ 10 点の物差しに載せ、琥珀のメーターで見せる。
-// home の「最近の一杯」・/records のカードで共有する。
+import { Meter } from "@/components/common/meter";
+
+// 評価は 10 点の物差し（0.1 刻み）。カードでの見せ方の正本。
 export function ScoreMeter({ rating }: { rating: number }) {
   return (
     <>
-      <div className="lp-meter flex-1">
-        <span style={{ width: `${rating * 20}%` }} />
-      </div>
-      <span className="lp-score shrink-0 text-sm">
-        {(rating * 2).toFixed(1)}
+      <Meter percent={rating * 10} className="flex-1" />
+      <span className="font-latin text-amber-bright shrink-0 text-sm tabular-nums">
+        {rating.toFixed(1)}
       </span>
     </>
   );

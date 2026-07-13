@@ -1,29 +1,30 @@
 import { useForm } from "@tanstack/react-form";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ChevronDown, Heart } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
+import { Button } from "@/components/common/button";
+import { Card } from "@/components/common/card";
+import { DateTimeField } from "@/components/common/date-time-field";
+import { Field, FieldError, Label } from "@/components/common/field";
+import { Input, Select, Textarea } from "@/components/common/input";
 import { buildEncounters, findEncounter } from "@/components/zukan/encounters";
 import { useAddRecord } from "@/hooks/use-add-record";
 import { useUpdateRecord } from "@/hooks/use-update-record";
+import { fromJstInput, toJstInput } from "@/lib/date";
+import { normalizeName } from "@/lib/match";
 import type { Category } from "@/schemas/categories";
 import type { DrinkRecord } from "@/schemas/records";
 import { recordsQueryOptions } from "@/server/records";
 
 import { NameSuggest } from "./name-suggest";
+import { PlaceSuggest } from "./place-suggest";
+import { buildPlaces } from "./places";
+import { RatingInput } from "./rating-input";
 import type { RevealResult } from "./record-reveal";
-import { StarRating } from "./star-rating";
 
-// datetime-local 用に「今」をローカル時刻の "YYYY-MM-DDTHH:mm" へ整形する。
-function toLocalInput(d: Date): string {
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
-// 一杯を記録／編集するフォーム。検証は schemas の zod を field 単位で共有し、
-// 楽観フック（useAddRecord / useUpdateRecord）で即時に一覧へ反映する。
-// record を渡すと編集モードになり、保存後は onUpdated（リヴィールなし）を呼ぶ。
-// onSuccess は新規追加時のみ。遷移とリヴィールの起動はページ側の仕事。
+// record を渡すと編集モード。onSuccess は新規追加時のみで、
+// 遷移とリヴィールの起動はページ側の仕事。
 export function RecordForm({
   categories,
   record,
@@ -39,16 +40,14 @@ export function RecordForm({
   const updateRecord = useUpdateRecord();
   const isEdit = record != null;
 
-  // 既知の銘柄（＝図鑑のマス）。サジェストと初/再会の判定に使う。
-  // 編集中の一杯は自分自身を数えないよう除いておく（「N杯目」がずれる）。
+  // 編集中の一杯は自分自身を除く（「N杯目」「この場所で N 杯」がずれる）。
   const { data: records } = useSuspenseQuery(recordsQueryOptions());
-  const encounters = useMemo(
-    () =>
-      buildEncounters(
-        record ? records.filter((r) => r.id !== record.id) : records,
-      ),
+  const others = useMemo(
+    () => (record ? records.filter((r) => r.id !== record.id) : records),
     [records, record],
   );
+  const encounters = useMemo(() => buildEncounters(others), [others]);
+  const places = useMemo(() => buildPlaces(others), [others]);
 
   const form = useForm({
     defaultValues: {
@@ -57,7 +56,9 @@ export function RecordForm({
       rating: (record?.rating ?? null) as number | null,
       isFavorite: record?.isFavorite ?? false,
       memo: record?.memo ?? "",
-      drunkAt: toLocalInput(record ? new Date(record.drunkAt) : new Date()),
+      // 記録の日時は JST 固定で整形するのでサーバーとブラウザで一致する（SSR で描ける）。
+      // 新規の「今」だけは時計依存なので空にして、マウント後に埋める。
+      drunkAt: record ? toJstInput(record.drunkAt) : "",
       placeName: record?.placeName ?? "",
       price: record?.price != null ? String(record.price) : "",
       abv: record?.abv != null ? String(record.abv) : "",
@@ -65,13 +66,11 @@ export function RecordForm({
     onSubmit: async ({ value, formApi }) => {
       const name = value.name.trim();
 
-      // 既知の銘柄（＝再会）なら、その出会いが持つカテゴリを引き継ぐ。
-      // 選ばずに保存されても図鑑が「未分類」に落ちないよう、ここで拾っておく。
+      // 既知の銘柄なら図鑑のカテゴリを引き継ぐ（未分類に落とさない）。
       const known = findEncounter(name, encounters);
       const categoryId = value.categoryId || known?.categoryId || null;
       const category = categories.find((c) => c.id === categoryId) ?? null;
 
-      // フォーム値 → 楽観フック入力（camelCase）。追加・編集で共有する。
       const fields = {
         name,
         categoryId,
@@ -81,13 +80,10 @@ export function RecordForm({
         placeName: value.placeName.trim() || null,
         price: value.price === "" ? null : Number(value.price),
         abv: value.abv === "" ? null : Number(value.abv),
-        drunkAt: value.drunkAt
-          ? new Date(value.drunkAt).toISOString()
-          : undefined,
+        drunkAt: value.drunkAt ? fromJstInput(value.drunkAt) : undefined,
         category: category ? { id: category.id, name: category.name } : null,
       };
 
-      // 編集：更新して閉じるだけ（リヴィール演出は初めての出会いのためのもの）。
       if (record) {
         await updateRecord.mutateAsync({ id: record.id, ...fields });
         onUpdated?.();
@@ -97,28 +93,37 @@ export function RecordForm({
       await addRecord.mutateAsync(fields);
       formApi.reset();
       onSuccess?.({
+        // 殿堂の席と同じ正規化キーで渡す（綴り違いで「未収蔵」に見せない）。
+        key: normalizeName(name),
         name,
         categoryName: category?.name ?? null,
         categorySlug: category?.slug ?? null,
         isFirst: !known,
         revisit: (known?.count ?? 0) + 1,
+        rating: value.rating,
       });
     },
   });
 
+  useEffect(() => {
+    if (record) return;
+    form.setFieldValue("drunkAt", toJstInput());
+  }, [form, record]);
+
   return (
-    <form
+    <Card
+      as="form"
       onSubmit={(e) => {
         e.preventDefault();
         void form.handleSubmit();
       }}
-      className="lp-card flex flex-col"
+      className="flex flex-col"
     >
       <div className="px-6 pt-6 pb-4 md:px-8 md:pt-8">
-        <p className="lp-kicker text-base">
+        <p className="font-latin text-amber-bright text-base tracking-[0.01em] italic">
           {isEdit ? "この一杯を、もう一度。" : "今夜の一杯。"}
         </p>
-        <h2 className="lp-serif mt-1 text-xl">
+        <h2 className="font-jp-serif mt-1 text-xl font-semibold">
           {isEdit ? "編集する" : "記録する"}
         </h2>
       </div>
@@ -145,7 +150,6 @@ export function RecordForm({
                 onBlur={field.handleBlur}
                 onPick={(encounter) => {
                   field.handleChange(encounter.name);
-                  // 図鑑が知っているカテゴリを連れてくる（未分類の出会いなら触らない）。
                   if (encounter.categoryId) {
                     form.setFieldValue("categoryId", encounter.categoryId);
                   }
@@ -157,14 +161,11 @@ export function RecordForm({
 
           <form.Field name="categoryId">
             {(field) => (
-              <div className="lp-field">
-                <label htmlFor={field.name} className="lp-label">
-                  カテゴリ
-                </label>
-                <select
+              <Field>
+                <Label htmlFor={field.name}>カテゴリ</Label>
+                <Select
                   id={field.name}
                   name={field.name}
-                  className="lp-input"
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
@@ -175,31 +176,36 @@ export function RecordForm({
                       {c.name}
                     </option>
                   ))}
-                </select>
-              </div>
+                </Select>
+              </Field>
             )}
           </form.Field>
 
-          {/* 評価（★）はカテゴリと横並び。カード表示と同じ★で揃える。 */}
           <form.Field name="rating">
             {(field) => (
-              <div className="lp-field">
-                <span className="lp-label">評価</span>
-                <StarRating
+              <Field>
+                <Label as="span">この一杯の印象</Label>
+                <RatingInput
                   value={field.state.value}
                   onChange={(v) => field.handleChange(v)}
                 />
-              </div>
+                {/* 測るのは「この一杯」。銘柄の順位は殿堂で本人が選ぶ（docs/concept.md §5）。
+                    ここを書かないと「点数＝順位」と読まれ、10 点が並んだときに破綻して見える。 */}
+                <p className="text-rice-dim text-xs">
+                  順位は TOP10 で自分で選びます。
+                </p>
+              </Field>
             )}
           </form.Field>
 
           <form.Field name="isFavorite">
             {(field) => (
-              <button
+              <Button
+                variant="ghost"
                 type="button"
                 aria-pressed={field.state.value}
                 onClick={() => field.handleChange(!field.state.value)}
-                className="lp-ghost justify-self-start text-sm sm:col-span-2"
+                className="justify-self-start text-sm sm:col-span-2"
                 style={
                   field.state.value
                     ? {
@@ -215,106 +221,96 @@ export function RecordForm({
                   fill={field.state.value ? "currentColor" : "none"}
                 />
                 {field.state.value ? "お気に入り" : "お気に入りに追加"}
-              </button>
+              </Button>
             )}
           </form.Field>
 
           <form.Field name="memo">
             {(field) => (
-              <div className="lp-field sm:col-span-2">
-                <label htmlFor={field.name} className="lp-label">
-                  メモ
-                </label>
-                <textarea
+              <Field className="sm:col-span-2">
+                <Label htmlFor={field.name}>メモ</Label>
+                <Textarea
                   id={field.name}
                   name={field.name}
-                  className="lp-input min-h-24 resize-y"
+                  className="min-h-24 resize-y"
                   placeholder="香り・余韻・その日のこと…"
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
                 />
-              </div>
+              </Field>
             )}
           </form.Field>
 
-          {/* 詳細は既定で畳んでおく（素早い記録を邪魔しない）。 */}
-          <div className="lp-divider sm:col-span-2" />
-          <details className="group sm:col-span-2">
+          {/* 詳細は既定で畳んでおく（素早い記録を邪魔しない）。
+              details は JS 無しでも開くので、ハイドレーション前に押されると DOM に
+              open が付き、React が属性差分を警告する。開いた状態が正しいので抑止する。 */}
+          <div className="via-ink-line h-px bg-linear-to-r from-transparent to-transparent sm:col-span-2" />
+          <details className="group sm:col-span-2" suppressHydrationWarning>
             <summary className="flex cursor-pointer list-none items-center justify-between py-1 text-sm select-none">
-              <span className="lp-dim">詳細 — 日時・場所・価格・度数</span>
-              <ChevronDown size={16} className="lp-caret lp-dim shrink-0" />
+              <span className="text-rice-dim">
+                詳細 — 日時・出会った場所・価格・度数
+              </span>
+              <ChevronDown
+                size={16}
+                className="lp-caret text-rice-dim shrink-0"
+              />
             </summary>
 
             <div className="mt-4 space-y-5">
               <form.Field name="drunkAt">
                 {(field) => (
-                  <div className="lp-field">
-                    <label htmlFor={field.name} className="lp-label">
-                      日時
-                    </label>
-                    <input
+                  <Field>
+                    <Label htmlFor={field.name}>日時</Label>
+                    <DateTimeField
                       id={field.name}
                       name={field.name}
-                      type="datetime-local"
-                      className="lp-input"
                       value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
+                      onChange={field.handleChange}
                     />
-                  </div>
+                  </Field>
                 )}
               </form.Field>
 
               <form.Field name="placeName">
                 {(field) => (
-                  <div className="lp-field">
-                    <label htmlFor={field.name} className="lp-label">
-                      場所
-                    </label>
-                    <input
-                      id={field.name}
-                      name={field.name}
-                      className="lp-input"
-                      placeholder="店名・自宅・旅先など"
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                    />
-                  </div>
+                  <PlaceSuggest
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    places={places}
+                    onChange={field.handleChange}
+                    onBlur={field.handleBlur}
+                  />
                 )}
               </form.Field>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <form.Field name="price">
                   {(field) => (
-                    <div className="lp-field">
-                      <label htmlFor={field.name} className="lp-label">
-                        価格（円）
-                      </label>
-                      <input
+                    <Field>
+                      <Label htmlFor={field.name}>価格（円）</Label>
+                      <Input
                         id={field.name}
                         name={field.name}
                         type="number"
                         min={0}
                         inputMode="numeric"
-                        className="lp-input"
                         placeholder="1200"
                         value={field.state.value}
                         onBlur={field.handleBlur}
                         onChange={(e) => field.handleChange(e.target.value)}
                       />
-                    </div>
+                    </Field>
                   )}
                 </form.Field>
 
                 <form.Field name="abv">
                   {(field) => (
-                    <div className="lp-field">
-                      <label htmlFor={field.name} className="lp-label">
-                        度数（%）
-                      </label>
-                      <input
+                    <Field>
+                      <Label htmlFor={field.name}>度数（%）</Label>
+                      <Input
                         id={field.name}
                         name={field.name}
                         type="number"
@@ -322,13 +318,12 @@ export function RecordForm({
                         max={100}
                         step={0.1}
                         inputMode="decimal"
-                        className="lp-input"
                         placeholder="12.5"
                         value={field.state.value}
                         onBlur={field.handleBlur}
                         onChange={(e) => field.handleChange(e.target.value)}
                       />
-                    </div>
+                    </Field>
                   )}
                 </form.Field>
               </div>
@@ -339,19 +334,22 @@ export function RecordForm({
 
       <div className="px-6 pt-6 pb-6 md:px-8 md:pb-8">
         {(isEdit ? updateRecord.isError : addRecord.isError) ? (
-          <p className="lp-error mb-3" role="alert">
-            {isEdit
-              ? "更新に失敗しました。時間をおいて、もう一度お試しください。"
-              : "記録に失敗しました。時間をおいて、もう一度お試しください。"}
-          </p>
+          <FieldError
+            className="mb-3"
+            errors={[
+              isEdit
+                ? "更新に失敗しました。時間をおいて、もう一度お試しください。"
+                : "記録に失敗しました。時間をおいて、もう一度お試しください。",
+            ]}
+          />
         ) : null}
 
         <form.Subscribe selector={(s) => s.isSubmitting}>
           {(isSubmitting) => (
-            <button
+            <Button
               type="submit"
               disabled={isSubmitting}
-              className="lp-cta w-full justify-center"
+              className="w-full justify-center"
             >
               {isSubmitting
                 ? isEdit
@@ -360,27 +358,10 @@ export function RecordForm({
                 : isEdit
                   ? "この一杯を更新"
                   : "この一杯を残す"}
-            </button>
+            </Button>
           )}
         </form.Subscribe>
       </div>
-    </form>
-  );
-}
-
-// フィールド検証エラー（zod の issue／文字列）を 1 行で表示する小さなヘルパー。
-function FieldError({
-  errors,
-}: {
-  errors: ReadonlyArray<{ message?: string } | string | undefined>;
-}) {
-  if (errors.length === 0) return null;
-  return (
-    <p className="lp-error" role="alert">
-      {errors
-        .map((e) => (typeof e === "string" ? e : e?.message))
-        .filter(Boolean)
-        .join(", ")}
-    </p>
+    </Card>
   );
 }

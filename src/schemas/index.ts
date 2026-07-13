@@ -1,12 +1,12 @@
 import { categoriesSchema } from "./categories";
 import { recordsSchema } from "./records";
-import { todosSchema } from "./todos";
+import { topDrinksSchema } from "./top-drinks";
 
 // アプリ全体のスキーマ。新しいテーブルの断片をここにスプレッドで合流させる。
 export const appSchema = {
-  ...todosSchema,
   ...categoriesSchema,
   ...recordsSchema,
+  ...topDrinksSchema,
 };
 
 export type AppSchema = typeof appSchema;

@@ -38,7 +38,7 @@ function DrinkGuidePage() {
     <main className="tashinami-lp min-h-dvh">
       <div className="mx-auto w-full max-w-5xl px-6">
         <AdaptiveHeader />
-        <div className="lp-rise py-6 md:py-10">
+        <div className="animate-lp-rise py-6 motion-reduce:animate-none md:py-10">
           <DrinkGuideView guide={guide} />
         </div>
         <Footer />

@@ -1,0 +1,655 @@
+/* Tashinami のコンポーネント層。
+   @layer components に入るので、呼び出し側の Tailwind ユーティリティで上書きできる。
+   （styles.css から layer(components) 付きで import している） */
+
+/* ── Tashinami LP（公開 index）─────────────────────────────────
+   コンセプト（docs/concept.md）準拠：暗いバーの灯りと、琥珀の一杯。
+   パレット／書体のトークンは styles.css の :root ＋ @theme に集約した。
+   ここは「墨の卓を敷く」レイアウトと背景だけを持つ。 */
+.tashinami-lp {
+  position: relative;
+  min-height: 100dvh;
+  overflow: hidden;
+  color: var(--rice);
+  font-family: var(--jp-sans);
+  background:
+    radial-gradient(
+      115% 72% at 84% -12%,
+      rgba(207, 146, 71, 0.18),
+      transparent 55%
+    ),
+    radial-gradient(
+      92% 60% at 4% 108%,
+      rgba(140, 74, 69, 0.14),
+      transparent 60%
+    ),
+    var(--ink);
+}
+
+/* Portal 内（モーダル等）で墨トーンだけを敷く軽量スコープ。
+   .tashinami-lp と違い全画面レイアウト・背景は付けない。 */
+.lp-scope {
+  color: var(--rice);
+  font-family: var(--jp-sans);
+}
+
+/* グラスが卓に残す輪染み（coaster ring）を背景の気配として */
+.tashinami-lp::before {
+  content: "";
+  position: absolute;
+  top: 11%;
+  right: 7%;
+  width: 42vw;
+  max-width: 560px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid rgba(207, 146, 71, 0.12);
+  pointer-events: none;
+  opacity: 0.6;
+  z-index: 0;
+}
+
+.tashinami-lp > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* 銘柄サジェストのポップオーバー。カードの上に重なるので下地は透けさせない。 */
+.lp-pop {
+  background: var(--ink-raise);
+  border: 1px solid rgba(207, 146, 71, 0.28);
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+  max-height: 19rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  animation: lp-pop-in 140ms ease-out both;
+}
+
+/* サジェストの候補 1 行。 */
+.lp-option {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition:
+    background 140ms ease,
+    border-color 140ms ease;
+}
+
+.lp-pop .lp-option {
+  margin-inline: 0.35rem;
+}
+
+.lp-option:hover,
+.lp-option.is-active {
+  background: rgba(207, 146, 71, 0.12);
+}
+
+/* 年次サマリー（Wrapped）カード */
+.lp-wrapped {
+  background:
+    linear-gradient(160deg, rgba(207, 146, 71, 0.16), rgba(140, 74, 69, 0.12)),
+    var(--ink-raise);
+  border: 1px solid rgba(207, 146, 71, 0.3);
+  border-radius: 20px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
+}
+
+/* ── signature：積み上がっていく“一杯カード”のショーケース ── */
+.lp-showcase {
+  position: relative;
+  width: min(400px, 100%);
+  margin-inline: auto;
+}
+
+.lp-showcase__glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 110%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle,
+    rgba(236, 185, 114, 0.4),
+    rgba(207, 146, 71, 0.12) 46%,
+    transparent 70%
+  );
+  filter: blur(30px);
+  animation: lp-breathe 6s ease-in-out infinite;
+  z-index: 0;
+}
+
+.lp-showcase__deck {
+  position: relative;
+  z-index: 1;
+  animation: lp-float 7s ease-in-out infinite;
+}
+
+/* ショーケースのカードは重なるので、下が透けないよう不透明な下地を敷く */
+.lp-showcase__front,
+.lp-showcase__ghost {
+  background:
+    linear-gradient(
+      165deg,
+      rgba(255, 255, 255, 0.06),
+      rgba(255, 255, 255, 0.02)
+    ),
+    var(--ink-raise);
+  transition:
+    transform 340ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 340ms ease;
+}
+
+.lp-showcase__front {
+  position: relative;
+  z-index: 2;
+  box-shadow:
+    0 1px 0 rgba(255, 236, 200, 0.08) inset,
+    0 30px 60px rgba(0, 0, 0, 0.55);
+}
+
+.lp-showcase__ghost {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  filter: brightness(0.72);
+}
+
+.lp-showcase__ghost--l {
+  transform: rotate(-6deg) translate(-15%, -5%) scale(0.95);
+}
+
+.lp-showcase__ghost--r {
+  transform: rotate(6deg) translate(15%, 5%) scale(0.95);
+}
+
+.lp-showcase:hover .lp-showcase__ghost--l {
+  transform: rotate(-13deg) translate(-42%, -13%) scale(0.95);
+}
+
+.lp-showcase:hover .lp-showcase__ghost--r {
+  transform: rotate(13deg) translate(42%, 13%) scale(0.95);
+}
+
+.lp-showcase:hover .lp-showcase__front {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow:
+    0 1px 0 rgba(255, 236, 200, 0.1) inset,
+    0 40px 80px rgba(0, 0, 0, 0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tashinami-lp .lp-showcase__deck,
+  .tashinami-lp .lp-showcase__glow {
+    animation: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   記録（records）：モーダルの所作と詳細トグル。
+   既存の墨×琥珀トークンだけで組む。新しい色は足さない。
+   ───────────────────────────────────────────────────────────── */
+
+/* 墨のヴェール（モーダル背景） */
+.lp-overlay {
+  background: rgba(10, 8, 6, 0.66);
+  backdrop-filter: blur(6px);
+  animation: lp-fade 220ms ease both;
+}
+
+/* カードが卓にすっと置かれるように、せり上げながら現れる。
+   中央寄せ（translate -50%,-50%）を内包するので Tailwind の translate は使わない。 */
+.lp-modal-in {
+  animation: lp-modal-in 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* 詳細トグルの琥珀キャレット */
+.lp-caret {
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+details[open] .lp-caret {
+  transform: rotate(180deg);
+}
+
+/* ── home「最近の一杯」：直近の一杯を卓に置き、それ以前を列に灯す ── */
+
+/* 器の絵は背景を抜いた線画。焼き込まれていた光輪は捨て、
+   灯りはカテゴリの差し色でここから当て直す。 */
+.lp-drink {
+  position: relative;
+  z-index: 1;
+  user-select: none;
+}
+
+.lp-drink__glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 155%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  filter: blur(12px);
+  pointer-events: none;
+}
+
+/* 直近の一杯のうしろで息をする間接照明。色はカテゴリの差し色を inline で受ける。 */
+.lp-tonight__glow {
+  position: absolute;
+  right: -10%;
+  bottom: -30%;
+  width: 420px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  filter: blur(30px);
+  animation: lp-breathe 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* それ以前の一杯。カードの枠は使わず、罫だけで支える。 */
+.lp-rows {
+  border-top: 1px solid var(--ink-line);
+}
+
+.lp-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem 1.25rem;
+  align-items: center;
+  padding: 1.25rem 0.75rem;
+  border-bottom: 1px solid var(--ink-line);
+  transition: background 200ms ease;
+}
+
+.lp-row:hover {
+  background: rgba(207, 146, 71, 0.045);
+}
+
+.lp-row__when {
+  order: -1;
+}
+
+.lp-row__glass {
+  grid-column: 1;
+}
+
+.lp-row__main {
+  grid-column: 2;
+}
+
+.lp-row__rate {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 1px;
+}
+
+@media (min-width: 768px) {
+  .lp-row {
+    grid-template-columns: 5.5rem auto 1fr 11rem;
+  }
+
+  .lp-row__glass,
+  .lp-row__main,
+  .lp-row__rate {
+    grid-column: auto;
+  }
+}
+
+/* 棚の厚み。数字が入ると、画面は痩せない。 */
+.lp-stat-rail {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--ink-line);
+  border: 1px solid var(--ink-line);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .lp-stat-rail {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.lp-stat {
+  background: var(--ink-raise);
+  padding: 1.1rem 1.25rem;
+  min-width: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tashinami-lp .lp-tonight__glow {
+    animation: none;
+  }
+}
+
+/* 出会いの図鑑：初出会い／再会のリヴィール（保存の一瞬だけ灯す） */
+.lp-reveal-veil {
+  background: radial-gradient(
+    70% 55% at 50% 42%,
+    #2a1d10 0%,
+    rgba(10, 7, 4, 0.92) 60%,
+    rgba(6, 4, 2, 0.97) 100%
+  );
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  animation: lp-fade 320ms ease both;
+}
+
+.lp-reveal-veil--quiet {
+  background: radial-gradient(
+    70% 55% at 50% 45%,
+    #1d1712 0%,
+    rgba(8, 6, 4, 0.93) 62%,
+    rgba(6, 4, 2, 0.97) 100%
+  );
+}
+
+/* 各要素が順に立ち上がる（ハレの所作）。遅延は要素側の inline で与える。 */
+.lp-reveal-item {
+  animation: lp-rise 820ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* 器のうしろで一度だけ広がる光の輪 */
+.lp-reveal-halo {
+  width: 1px;
+  height: 1px;
+  border-radius: 50%;
+  animation: lp-halo 2s ease-out 0.15s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-overlay,
+  .lp-reveal-veil,
+  .lp-reveal-item,
+  .lp-reveal-halo {
+    animation: none;
+  }
+
+  .lp-modal-in {
+    animation: none;
+    transform: translate(-50%, -50%);
+  }
+
+  .lp-caret {
+    transition: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   飲み方ガイド（drinks）：一覧＝棚、詳細＝見開き。
+   差し色はカテゴリごとに --dg-accent で受ける（accentForSlug と同じ値）。
+   ───────────────────────────────────────────────────────────── */
+
+.dg-latin {
+  font-family: var(--latin);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--rice-dim);
+}
+
+.dg-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--rice-dim);
+}
+
+/* 一覧＝棚。器が並び、その足元を一本の灯りが通る。 */
+.dg-shelf {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  padding-bottom: 2.2rem;
+}
+
+.dg-shelf::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0.6rem;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(207, 146, 71, 0.45),
+    transparent
+  );
+  box-shadow: 0 0 24px rgba(207, 146, 71, 0.35);
+}
+
+.dg-shelf__item {
+  display: grid;
+  justify-items: center;
+  gap: 0.3rem;
+  padding: 1.6rem 0.8rem 1.4rem;
+  /* 枠は四辺とも閉じる。下辺を開けて「棚の灯り」に載せる案は、
+     折り返した行の下には灯りが無く、枠が宙で途切れて見えるため採らない。 */
+  border: 1px solid transparent;
+  border-radius: 16px;
+  color: inherit;
+  transition:
+    transform 240ms cubic-bezier(0.16, 1, 0.3, 1),
+    background 240ms ease,
+    border-color 240ms ease;
+}
+
+.dg-shelf__item:hover {
+  transform: translateY(-6px);
+  border-color: var(--ink-line);
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.015)
+  );
+  color: inherit;
+}
+
+.dg-shelf__item:focus-visible {
+  outline: 2px solid var(--amber-bright);
+  outline-offset: 3px;
+}
+
+.dg-shelf__temp {
+  font-family: var(--latin);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.78rem;
+  color: var(--dg-accent, var(--amber));
+}
+
+/* 適温の帯。下地は「冷たい → 温かい」、その上に飲み頃を差し色で灯す。 */
+.dg-track {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  border: 1px solid var(--ink-line);
+  background: linear-gradient(
+    90deg,
+    rgba(120, 170, 200, 0.28),
+    rgba(236, 226, 208, 0.1) 45%,
+    rgba(200, 110, 70, 0.3)
+  );
+}
+
+.dg-track__band {
+  position: absolute;
+  top: -1px;
+  bottom: -1px;
+  border-radius: 999px;
+  background: var(--dg-accent, var(--amber));
+  box-shadow: 0 0 14px
+    color-mix(in oklab, var(--dg-accent, var(--amber)) 55%, transparent);
+}
+
+.dg-scale {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--latin);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.72rem;
+  color: var(--rice-dim);
+}
+
+/* 詳細＝見開き。左の札は貼りついたまま、右の読み物だけが流れる。 */
+.dg-spread {
+  display: grid;
+  grid-template-columns: 20rem 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .dg-spread {
+    grid-template-columns: 1fr;
+    gap: 1.8rem;
+  }
+}
+
+.dg-dossier {
+  display: grid;
+  gap: 1.4rem;
+  padding: 1.5rem;
+  position: sticky;
+  top: 1rem;
+}
+
+@media (max-width: 900px) {
+  .dg-dossier {
+    position: static;
+  }
+}
+
+.dg-figure {
+  font-family: var(--latin);
+  font-variant-numeric: tabular-nums;
+  font-size: 1.1rem;
+  color: var(--dg-accent, var(--amber));
+}
+
+.dg-fact {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.85rem;
+}
+
+.dg-fact > span:last-child {
+  text-align: right;
+  font-size: 0.78rem;
+}
+
+.dg-sec {
+  padding: 2rem 0;
+  border-top: 1px solid var(--ink-line);
+}
+
+.dg-sec:first-of-type {
+  margin-top: 1.6rem;
+}
+
+.dg-sec__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  margin-bottom: 1.4rem;
+}
+
+/* 手順。番号は琥珀の丸、次の番号へ細い軸が落ちる。 */
+.dg-steps {
+  display: grid;
+  gap: 1.4rem;
+}
+
+.dg-step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.dg-step__mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  font-family: var(--latin);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--amber-bright);
+  background: rgba(207, 146, 71, 0.1);
+  border: 1px solid rgba(207, 146, 71, 0.3);
+}
+
+.dg-step:not(:last-child) .dg-step__mark::after {
+  content: "";
+  position: absolute;
+  top: 2.2rem;
+  left: 50%;
+  width: 1px;
+  height: calc(100% + 0.9rem);
+  background: linear-gradient(180deg, rgba(207, 146, 71, 0.4), transparent);
+}
+
+/* 見取り図。名前・説明・注記（適温や比率）の 3 列。狭い画面では説明が下へ回る。 */
+.dg-style {
+  display: grid;
+  grid-template-columns: 9rem 1fr auto;
+  gap: 1rem;
+  align-items: baseline;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--ink-line);
+}
+
+.dg-style:last-child {
+  border-bottom: 0;
+}
+
+.dg-style__meta {
+  font-family: var(--latin);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.78rem;
+  white-space: nowrap;
+  color: var(--dg-accent, var(--amber));
+}
+
+@media (max-width: 640px) {
+  .dg-style {
+    grid-template-columns: 1fr auto;
+  }
+
+  .dg-style > p {
+    grid-column: 1 / -1;
+  }
+}
+
+/* 肴。葡萄色の札で、琥珀の並びに一点だけ違う温度を置く。 */
+.dg-pair {
+  padding: 0.35rem 0.8rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  background: rgba(140, 74, 69, 0.16);
+  border: 1px solid rgba(140, 74, 69, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dg-shelf__item {
+    transition: none;
+  }
+
+  .dg-shelf__item:hover {
+    transform: none;
+  }
+}

@@ -2,6 +2,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 
+import { Button } from "@/components/common/button";
 import { RecordForm } from "@/components/records/record-form";
 import { announceReveal } from "@/components/records/reveal-store";
 import { categoriesQueryOptions } from "@/server/categories";
@@ -26,13 +27,15 @@ function NewRecordPage() {
     <main className="tashinami-lp min-h-dvh">
       <div className="mx-auto w-full max-w-2xl px-6">
         <header className="py-6">
-          <Link to="/records" className="lp-ghost text-sm no-underline">
-            <ArrowLeft size={16} />
-            記録一覧へ
-          </Link>
+          <Button asChild variant="ghost">
+            <Link to="/records" className="text-sm no-underline">
+              <ArrowLeft size={16} />
+              記録一覧へ
+            </Link>
+          </Button>
         </header>
 
-        <section className="lp-rise pb-16">
+        <section className="animate-lp-rise pb-16 motion-reduce:animate-none">
           <RecordForm
             categories={categories}
             onSuccess={(result) => {

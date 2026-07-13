@@ -4,9 +4,28 @@
 
 @import 'tw-animate-css';
 
+/* lp-* / dg-* のコンポーネント CSS。ユーティリティに負けるレイヤーへ明示的に載せる。 */
+@import './styles.components.css' layer(components);
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  /* Tashinami のパレット（墨×琥珀）。ダークモードでも値は変わらない。
+     @theme inline 経由で bg-ink / text-amber-bright / border-ink-line などのユーティリティになる。 */
+  --ink: #140f0b;
+  --ink-raise: #1e1712;
+  --ink-line: rgba(214, 165, 96, 0.16);
+  --amber: #cf9247;
+  --amber-bright: #ecb972;
+  --amber-deep: #9f6329;
+  --wine: #8c4a45;
+  --rice: #ece2d0;
+  --rice-dim: #a2957f;
+
+  --jp-serif: 'Shippori Mincho', 'Fraunces', serif;
+  --jp-sans: 'Zen Kaku Gothic New', 'Manrope', sans-serif;
+  --latin: 'Fraunces', Georgia, serif;
+
   --sea-ink: #173a40;
   --sea-ink-soft: #416166;
   --lagoon: #4fb8b2;
@@ -117,8 +136,120 @@
   --sidebar-ring: oklch(0.442 0.017 285.786);
 }
 
+/* 所作（アニメーション）。tsx から animate-lp-rise のように呼ぶ。
+   同じキーフレームでも尺が違うものは別トークンにして、現状の秒数を保つ。 */
+@theme {
+  --animate-lp-rise: lp-rise 800ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-lp-reveal: lp-rise 820ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-lp-fade: lp-fade 220ms ease both;
+  --animate-lp-veil: lp-fade 320ms ease both;
+  --animate-lp-pop-in: lp-pop-in 140ms ease-out both;
+  --animate-lp-modal-in: lp-modal-in 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-lp-breathe: lp-breathe 6s ease-in-out infinite;
+  --animate-lp-float: lp-float 7s ease-in-out infinite;
+  --animate-lp-halo: lp-halo 2s ease-out 0.15s both;
+
+  @keyframes lp-rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes lp-fade {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes lp-pop-in {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* 中央寄せ（translate -50%,-50%）を内包するので、呼び出し側で translate は使わない。 */
+  @keyframes lp-modal-in {
+    from {
+      opacity: 0;
+      transform: translate(-50%, calc(-50% + 12px));
+    }
+
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  @keyframes lp-breathe {
+    0%,
+    100% {
+      opacity: 0.78;
+    }
+
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes lp-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-7px);
+    }
+  }
+
+  @keyframes lp-halo {
+    0% {
+      box-shadow:
+        0 0 0 0 rgba(238, 186, 99, 0.33),
+        0 0 0 0 rgba(208, 154, 69, 0.19);
+    }
+
+    100% {
+      box-shadow:
+        0 0 0 150px rgba(238, 186, 99, 0),
+        0 0 0 260px rgba(208, 154, 69, 0);
+    }
+  }
+}
+
 @theme inline {
   --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+
+  /* Tashinami のパレット／書体をユーティリティとして生やす。 */
+  --color-ink: var(--ink);
+  --color-ink-raise: var(--ink-raise);
+  --color-ink-line: var(--ink-line);
+  --color-amber: var(--amber);
+  --color-amber-bright: var(--amber-bright);
+  --color-amber-deep: var(--amber-deep);
+  --color-wine: var(--wine);
+  --color-rice: var(--rice);
+  --color-rice-dim: var(--rice-dim);
+  --font-jp-serif: var(--jp-serif);
+  --font-jp-sans: var(--jp-sans);
+  --font-latin: var(--latin);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -157,1127 +288,105 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-html,
-body,
-#app {
-  min-height: 100%;
-}
-
-body {
-  margin: 0;
-  color: var(--sea-ink);
-  font-family: var(--font-sans);
-  background-color: var(--bg-base);
-  background:
-    radial-gradient(1100px 620px at -8% -10%, var(--hero-a), transparent 58%),
-    radial-gradient(1050px 620px at 112% -12%, var(--hero-b), transparent 62%),
-    radial-gradient(720px 380px at 50% 115%, rgba(79, 184, 178, 0.1), transparent 68%),
-    linear-gradient(180deg, color-mix(in oklab, var(--sand) 68%, white) 0%, var(--foam) 44%, var(--bg-base) 100%);
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  opacity: 0.28;
-  background:
-    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.8), transparent 34%),
-    radial-gradient(circle at 78% 26%, rgba(79, 184, 178, 0.2), transparent 42%),
-    radial-gradient(circle at 42% 82%, rgba(47, 106, 74, 0.14), transparent 36%);
-}
-
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  opacity: 0.14;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
-  background-size: 28px 28px;
-  mask-image: radial-gradient(circle at 50% 30%, black, transparent 78%);
-}
-
-a {
-  color: var(--lagoon-deep);
-  text-decoration-color: rgba(50, 143, 151, 0.4);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
-}
-
-a:hover {
-  color: #246f76;
-}
-
-code {
-  font-size: 0.9em;
-  border: 1px solid var(--line);
-  background: color-mix(in oklab, var(--surface-strong) 82%, white 18%);
-  border-radius: 7px;
-  padding: 2px 7px;
-}
-
-pre code {
-  border: 0;
-  background: transparent;
-  padding: 0;
-  border-radius: 0;
-  font-size: inherit;
-  color: inherit;
-}
-
-.prose pre {
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: #1d2e45;
-  color: #e8efff;
-}
-
-.page-wrap {
-  width: min(1080px, calc(100% - 2rem));
-  margin-inline: auto;
-}
-
-.display-title {
-  font-family: 'Fraunces', Georgia, serif;
-}
-
-.island-shell {
-  border: 1px solid var(--line);
-  background: linear-gradient(165deg, var(--surface-strong), var(--surface));
-  box-shadow:
-    0 1px 0 var(--inset-glint) inset,
-    0 22px 44px rgba(30, 90, 72, 0.1),
-    0 6px 18px rgba(23, 58, 64, 0.08);
-  backdrop-filter: blur(4px);
-}
-
-.feature-card {
-  background: linear-gradient(165deg, color-mix(in oklab, var(--surface-strong) 93%, white 7%), var(--surface));
-  box-shadow:
-    0 1px 0 var(--inset-glint) inset,
-    0 18px 34px rgba(30, 90, 72, 0.1),
-    0 4px 14px rgba(23, 58, 64, 0.06);
-}
-
-.feature-card:hover {
-  transform: translateY(-2px);
-  border-color: color-mix(in oklab, var(--lagoon-deep) 35%, var(--line));
-}
-
-button,
-.island-shell,
-a {
-  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease,
-    transform 180ms ease;
-}
-
-.island-kicker {
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  font-weight: 700;
-  font-size: 0.69rem;
-  color: var(--kicker);
-}
-
-.nav-link {
-  position: relative;
-  text-decoration: none;
-  color: var(--sea-ink-soft);
-}
-
-.nav-link::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -8px;
-  width: 100%;
-  height: 2px;
-  transform: scaleX(0);
-  transform-origin: left;
-  background: linear-gradient(90deg, var(--lagoon), #7ed3bf);
-  transition: transform 170ms ease;
-}
-
-.nav-link:hover,
-.nav-link.is-active {
-  color: var(--sea-ink);
-}
-
-.nav-link:hover::after,
-.nav-link.is-active::after {
-  transform: scaleX(1);
-}
-
-.rise-in {
-  animation: rise-in 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-@keyframes rise-in {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.site-footer {
-  border-top: 1px solid var(--line);
-  background: color-mix(in oklab, var(--header-bg) 84%, transparent 16%);
-}
-
+/* 要素そのものの下地。必ず @layer base に入れる。
+   レイヤー外に置くと a { color } のような要素ルールが
+   @layer components の .lp-* に勝ってしまい、LP のリンク色が壊れる。 */
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     background-color: var(--background);
     color: var(--foreground);
   }
-}
 
-/* ── Tashinami LP（公開 index）─────────────────────────────────
-   コンセプト（docs/concept.md）準拠：暗いバーの灯りと、琥珀の一杯。
-   このページ専用スコープ。既存テーマトークンには手を入れない。 */
-.tashinami-lp {
-  --ink: #140f0b;
-  --ink-raise: #1e1712;
-  --ink-line: rgba(214, 165, 96, 0.16);
-  --amber: #cf9247;
-  --amber-bright: #ecb972;
-  --amber-deep: #9f6329;
-  --wine: #8c4a45;
-  --rice: #ece2d0;
-  --rice-dim: #a2957f;
-
-  --font-jp-serif: 'Shippori Mincho', 'Fraunces', serif;
-  --font-jp-sans: 'Zen Kaku Gothic New', 'Manrope', sans-serif;
-  --font-latin: 'Fraunces', Georgia, serif;
-
-  position: relative;
-  min-height: 100dvh;
-  overflow: hidden;
-  color: var(--rice);
-  font-family: var(--font-jp-sans);
-  background:
-    radial-gradient(115% 72% at 84% -12%, rgba(207, 146, 71, 0.18), transparent 55%),
-    radial-gradient(92% 60% at 4% 108%, rgba(140, 74, 69, 0.14), transparent 60%),
-    var(--ink);
-}
-
-/* Portal 内（モーダル等）で lp- トークンだけを効かせる軽量スコープ。
-   .tashinami-lp と違い全画面レイアウト・背景は付けない。 */
-.lp-scope {
-  --ink: #140f0b;
-  --ink-raise: #1e1712;
-  --ink-line: rgba(214, 165, 96, 0.16);
-  --amber: #cf9247;
-  --amber-bright: #ecb972;
-  --amber-deep: #9f6329;
-  --wine: #8c4a45;
-  --rice: #ece2d0;
-  --rice-dim: #a2957f;
-
-  --font-jp-serif: 'Shippori Mincho', 'Fraunces', serif;
-  --font-jp-sans: 'Zen Kaku Gothic New', 'Manrope', sans-serif;
-  --font-latin: 'Fraunces', Georgia, serif;
-
-  color: var(--rice);
-  font-family: var(--font-jp-sans);
-}
-
-/* グラスが卓に残す輪染み（coaster ring）を背景の気配として */
-.tashinami-lp::before {
-  content: '';
-  position: absolute;
-  top: 11%;
-  right: 7%;
-  width: 42vw;
-  max-width: 560px;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  border: 1px solid rgba(207, 146, 71, 0.12);
-  pointer-events: none;
-  opacity: 0.6;
-  z-index: 0;
-}
-
-.tashinami-lp > * {
-  position: relative;
-  z-index: 1;
-}
-
-.lp-serif {
-  font-family: var(--font-jp-serif);
-  font-weight: 600;
-}
-.lp-latin {
-  font-family: var(--font-latin);
-}
-.lp-dim {
-  color: var(--rice-dim);
-}
-/* リンクとして使う lp-dim（フッターナビ等）のホバーはテーマの琥珀へ。
-   グローバルの a:hover（青緑）が LP スコープに漏れるのを打ち消す。 */
-a.lp-dim {
-  transition: color 180ms ease;
-}
-a.lp-dim:hover {
-  color: var(--amber-bright);
-}
-.lp-amber {
-  color: var(--amber-bright);
-}
-
-.lp-kicker {
-  font-family: var(--font-latin);
-  font-style: italic;
-  letter-spacing: 0.01em;
-  color: var(--amber-bright);
-}
-.lp-eyebrow {
-  text-transform: uppercase;
-  letter-spacing: 0.28em;
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: var(--rice-dim);
-}
-
-.lp-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.8rem 1.5rem;
-  border-radius: 999px;
-  font-weight: 700;
-  color: #1a1109;
-  background: linear-gradient(180deg, var(--amber-bright), var(--amber));
-  box-shadow:
-    0 1px 0 rgba(255, 236, 200, 0.6) inset,
-    0 12px 30px rgba(159, 99, 41, 0.4);
-  transition:
-    transform 180ms ease,
-    filter 180ms ease;
-}
-.lp-cta:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.05);
-  color: #1a1109;
-}
-.lp-cta:focus-visible {
-  outline: 2px solid var(--amber-bright);
-  outline-offset: 3px;
-}
-.lp-cta:disabled {
-  opacity: 0.55;
-  transform: none;
-  cursor: not-allowed;
-  filter: none;
-}
-
-.lp-ghost {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.8rem 1.2rem;
-  border-radius: 999px;
-  font-weight: 600;
-  color: var(--rice);
-  border: 1px solid var(--ink-line);
-  transition:
-    border-color 180ms ease,
-    color 180ms ease,
-    background 180ms ease;
-}
-.lp-ghost:hover {
-  border-color: rgba(207, 146, 71, 0.5);
-  color: var(--amber-bright);
-  background: rgba(207, 146, 71, 0.06);
-}
-
-/* ストレッチリンク：見出しを本物のリンクにしたまま、当たり判定だけを
-   親カード全面へ広げる。カードにアイコンを置かずに「触れる」を伝える。
-   キーボードのフォーカスは見出しに乗るので、輪郭は文字のまわりに出る。 */
-.lp-stretch {
-  color: inherit;
-  text-decoration: none;
-  transition: color 180ms ease;
-}
-.lp-stretch::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-}
-.lp-stretch:hover,
-.lp-card--hover:hover .lp-stretch {
-  color: var(--amber-bright);
-}
-.lp-stretch:focus-visible {
-  outline: 2px solid var(--amber-bright);
-  outline-offset: 3px;
-  border-radius: 4px;
-}
-
-/* 「開く」の合図。ホバーの無い端末でも、常にここに在る。
-   触れられる面であることを、鉛筆より静かに伝える。 */
-.lp-go {
-  color: var(--rice-dim);
-  opacity: 0.45;
-  transition:
-    opacity 180ms ease,
-    color 180ms ease,
-    translate 180ms ease;
-}
-.lp-card--hover:hover .lp-go {
-  opacity: 1;
-  color: var(--amber-bright);
-  translate: 2px 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .lp-card--hover:hover .lp-go {
-    translate: none;
+  html,
+  body,
+  #app {
+    min-height: 100%;
   }
-}
 
-.lp-card {
-  background: linear-gradient(165deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
-  border: 1px solid var(--ink-line);
-  border-radius: 16px;
-  box-shadow:
-    0 1px 0 rgba(255, 236, 200, 0.06) inset,
-    0 22px 44px rgba(0, 0, 0, 0.34);
-  transition:
-    transform 200ms ease,
-    border-color 200ms ease;
-}
-.lp-card--hover:hover {
-  transform: translateY(-3px);
-  border-color: rgba(207, 146, 71, 0.42);
-}
-
-.lp-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.15rem 0.6rem;
-  border-radius: 999px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--amber-bright);
-  background: rgba(207, 146, 71, 0.1);
-  border: 1px solid rgba(207, 146, 71, 0.24);
-}
-
-.lp-divider {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--ink-line), transparent);
-}
-
-/* 評価メーター：グラスに琥珀が満ちる */
-.lp-meter {
-  height: 6px;
-  border-radius: 999px;
-  background: rgba(236, 226, 208, 0.12);
-  overflow: hidden;
-}
-.lp-meter > span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, var(--amber-deep), var(--amber-bright));
-}
-
-.lp-rank {
-  font-family: var(--font-latin);
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  color: var(--amber);
-}
-.lp-score {
-  font-family: var(--font-latin);
-  font-variant-numeric: tabular-nums;
-  color: var(--amber-bright);
-}
-
-/* フォーム（ログイン等） */
-.lp-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-.lp-label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--rice-dim);
-}
-.lp-input {
-  width: 100%;
-  padding: 0.7rem 0.9rem;
-  border-radius: 12px;
-  color: var(--rice);
-  font-size: 0.95rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--ink-line);
-  transition:
-    border-color 160ms ease,
-    box-shadow 160ms ease,
-    background 160ms ease;
-}
-.lp-input::placeholder {
-  color: rgba(162, 149, 127, 0.55);
-}
-.lp-input:focus {
-  outline: none;
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(207, 146, 71, 0.6);
-  box-shadow: 0 0 0 3px rgba(207, 146, 71, 0.18);
-}
-.lp-input[aria-invalid="true"] {
-  border-color: rgba(200, 88, 78, 0.7);
-  box-shadow: 0 0 0 3px rgba(200, 88, 78, 0.15);
-}
-.lp-error {
-  color: #e5928a;
-  font-size: 0.8rem;
-}
-
-/* 銘柄サジェストのポップオーバー。カードの上に重なるので下地は透けさせない。 */
-.lp-pop {
-  background: var(--ink-raise);
-  border: 1px solid rgba(207, 146, 71, 0.28);
-  border-radius: 14px;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
-  max-height: 19rem;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  animation: lp-pop-in 140ms ease-out both;
-}
-@keyframes lp-pop-in {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
+  body {
+    margin: 0;
+    color: var(--sea-ink);
+    font-family: var(--font-sans);
+    background-color: var(--bg-base);
+    background:
+      radial-gradient(1100px 620px at -8% -10%, var(--hero-a), transparent 58%),
+      radial-gradient(1050px 620px at 112% -12%, var(--hero-b), transparent 62%),
+      radial-gradient(720px 380px at 50% 115%, rgba(79, 184, 178, 0.1), transparent 68%),
+      linear-gradient(180deg, color-mix(in oklab, var(--sand) 68%, white) 0%, var(--foam) 44%, var(--bg-base) 100%);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  to {
-    opacity: 1;
-    transform: none;
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.28;
+    background:
+      radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.8), transparent 34%),
+      radial-gradient(circle at 78% 26%, rgba(79, 184, 178, 0.2), transparent 42%),
+      radial-gradient(circle at 42% 82%, rgba(47, 106, 74, 0.14), transparent 36%);
   }
-}
 
-/* サジェストの候補 1 行。 */
-.lp-option {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: 10px;
-  cursor: pointer;
-  transition:
-    background 140ms ease,
-    border-color 140ms ease;
-}
-.lp-pop .lp-option {
-  margin-inline: 0.35rem;
-}
-.lp-option:hover,
-.lp-option.is-active {
-  background: rgba(207, 146, 71, 0.12);
-}
-
-/* 年次サマリー（Wrapped）カード */
-.lp-wrapped {
-  background:
-    linear-gradient(160deg, rgba(207, 146, 71, 0.16), rgba(140, 74, 69, 0.12)),
-    var(--ink-raise);
-  border: 1px solid rgba(207, 146, 71, 0.3);
-  border-radius: 20px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
-}
-
-/* ── signature：積み上がっていく“一杯カード”のショーケース ── */
-.lp-showcase {
-  position: relative;
-  width: min(400px, 100%);
-  margin-inline: auto;
-}
-.lp-showcase__glow {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 110%;
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(
-    circle,
-    rgba(236, 185, 114, 0.4),
-    rgba(207, 146, 71, 0.12) 46%,
-    transparent 70%
-  );
-  filter: blur(30px);
-  animation: lp-breathe 6s ease-in-out infinite;
-  z-index: 0;
-}
-.lp-showcase__deck {
-  position: relative;
-  z-index: 1;
-  animation: lp-float 7s ease-in-out infinite;
-}
-/* ショーケースのカードは重なるので、下が透けないよう不透明な下地を敷く */
-.lp-showcase__front,
-.lp-showcase__ghost {
-  background:
-    linear-gradient(165deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
-    var(--ink-raise);
-  transition:
-    transform 340ms cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 340ms ease;
-}
-.lp-showcase__front {
-  position: relative;
-  z-index: 2;
-  box-shadow:
-    0 1px 0 rgba(255, 236, 200, 0.08) inset,
-    0 30px 60px rgba(0, 0, 0, 0.55);
-}
-.lp-showcase__ghost {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  filter: brightness(0.72);
-}
-.lp-showcase__ghost--l {
-  transform: rotate(-6deg) translate(-15%, -5%) scale(0.95);
-}
-.lp-showcase__ghost--r {
-  transform: rotate(6deg) translate(15%, 5%) scale(0.95);
-}
-.lp-showcase:hover .lp-showcase__ghost--l {
-  transform: rotate(-13deg) translate(-42%, -13%) scale(0.95);
-}
-.lp-showcase:hover .lp-showcase__ghost--r {
-  transform: rotate(13deg) translate(42%, 13%) scale(0.95);
-}
-.lp-showcase:hover .lp-showcase__front {
-  transform: translateY(-10px) scale(1.02);
-  box-shadow:
-    0 1px 0 rgba(255, 236, 200, 0.1) inset,
-    0 40px 80px rgba(0, 0, 0, 0.6);
-}
-
-@keyframes lp-float {
-  0%,
-  100% {
-    transform: translateY(0);
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.14;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: radial-gradient(circle at 50% 30%, black, transparent 78%);
   }
-  50% {
-    transform: translateY(-7px);
+
+  a {
+    color: var(--lagoon-deep);
+    text-decoration-color: rgba(50, 143, 151, 0.4);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
   }
-}
-@keyframes lp-breathe {
-  0%,
-  100% {
-    opacity: 0.78;
+
+  a:hover {
+    color: #246f76;
   }
-  50% {
-    opacity: 1;
+
+  code {
+    font-size: 0.9em;
+    border: 1px solid var(--line);
+    background: color-mix(in oklab, var(--surface-strong) 82%, white 18%);
+    border-radius: 7px;
+    padding: 2px 7px;
   }
-}
 
-.lp-rise {
-  animation: lp-rise 800ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-.lp-rise-2 {
-  animation-delay: 120ms;
-}
-.lp-rise-3 {
-  animation-delay: 240ms;
-}
-@keyframes lp-rise {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
+  pre code {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+    color: inherit;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  .prose pre {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #1d2e45;
+    color: #e8efff;
   }
-}
 
-@media (prefers-reduced-motion: reduce) {
-  .tashinami-lp .lp-showcase__deck,
-  .tashinami-lp .lp-showcase__glow,
-  .tashinami-lp .lp-rise,
-  .tashinami-lp .lp-rise-2,
-  .tashinami-lp .lp-rise-3 {
-    animation: none;
-  }
-}
-
-/* ─────────────────────────────────────────────────────────────
-   記録（records）：モーダルの所作と詳細トグル。
-   既存の墨×琥珀トークンだけで組む。新しい色は足さない。
-   ───────────────────────────────────────────────────────────── */
-
-/* 墨のヴェール（モーダル背景） */
-.lp-overlay {
-  background: rgba(10, 8, 6, 0.66);
-  backdrop-filter: blur(6px);
-  animation: lp-fade 220ms ease both;
-}
-@keyframes lp-fade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* カードが卓にすっと置かれるように、せり上げながら現れる。
-   中央寄せ（translate -50%,-50%）を内包するので Tailwind の translate は使わない。 */
-.lp-modal-in {
-  animation: lp-modal-in 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-@keyframes lp-modal-in {
-  from {
-    opacity: 0;
-    transform: translate(-50%, calc(-50% + 12px));
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%);
-  }
-}
-
-/* 詳細トグルの琥珀キャレット */
-.lp-caret {
-  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-details[open] .lp-caret {
-  transform: rotate(180deg);
-}
-
-/* 記録カードのお気に入り♥のほのかな灯り */
-.lp-fav {
-  color: var(--amber-bright);
-  filter: drop-shadow(0 0 6px rgba(236, 185, 114, 0.45));
-}
-
-/* ── home「最近の一杯」：直近の一杯を卓に置き、それ以前を列に灯す ── */
-
-/* 器の絵は背景を抜いた線画。焼き込まれていた光輪は捨て、
-   灯りはカテゴリの差し色でここから当て直す。 */
-.lp-drink {
-  position: relative;
-  z-index: 1;
-  user-select: none;
-}
-.lp-drink__glow {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 155%;
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  filter: blur(12px);
-  pointer-events: none;
-}
-
-/* 直近の一杯のうしろで息をする間接照明。色はカテゴリの差し色を inline で受ける。 */
-.lp-tonight__glow {
-  position: absolute;
-  right: -10%;
-  bottom: -30%;
-  width: 420px;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  filter: blur(30px);
-  animation: lp-breathe 6s ease-in-out infinite;
-  pointer-events: none;
-}
-
-/* それ以前の一杯。カードの枠は使わず、罫だけで支える。 */
-.lp-rows {
-  border-top: 1px solid var(--ink-line);
-}
-.lp-row {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.75rem 1.25rem;
-  align-items: center;
-  padding: 1.25rem 0.75rem;
-  border-bottom: 1px solid var(--ink-line);
-  transition: background 200ms ease;
-}
-.lp-row:hover {
-  background: rgba(207, 146, 71, 0.045);
-}
-.lp-row__when {
-  order: -1;
-}
-.lp-row__glass {
-  grid-column: 1;
-}
-.lp-row__main {
-  grid-column: 2;
-}
-.lp-row__rate {
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  min-height: 1px;
-}
-@media (min-width: 768px) {
-  .lp-row {
-    grid-template-columns: 5.5rem auto 1fr 11rem;
-  }
-  .lp-row__glass,
-  .lp-row__main,
-  .lp-row__rate {
-    grid-column: auto;
-  }
-}
-
-/* 棚の厚み。数字が入ると、画面は痩せない。 */
-.lp-stat-rail {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1px;
-  background: var(--ink-line);
-  border: 1px solid var(--ink-line);
-  border-radius: 16px;
-  overflow: hidden;
-}
-@media (min-width: 768px) {
-  .lp-stat-rail {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-.lp-stat {
-  background: var(--ink-raise);
-  padding: 1.1rem 1.25rem;
-  min-width: 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tashinami-lp .lp-tonight__glow {
-    animation: none;
-  }
-}
-
-/* 出会いの図鑑：初出会い／再会のリヴィール（保存の一瞬だけ灯す） */
-.lp-reveal-veil {
-  background: radial-gradient(
-    70% 55% at 50% 42%,
-    #2a1d10 0%,
-    rgba(10, 7, 4, 0.92) 60%,
-    rgba(6, 4, 2, 0.97) 100%
-  );
-  -webkit-backdrop-filter: blur(3px);
-  backdrop-filter: blur(3px);
-  animation: lp-fade 320ms ease both;
-}
-.lp-reveal-veil--quiet {
-  background: radial-gradient(
-    70% 55% at 50% 45%,
-    #1d1712 0%,
-    rgba(8, 6, 4, 0.93) 62%,
-    rgba(6, 4, 2, 0.97) 100%
-  );
-}
-/* 各要素が順に立ち上がる（ハレの所作）。遅延は要素側の inline で与える。 */
-.lp-reveal-item {
-  animation: lp-rise 820ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-.lp-reveal-glow {
-  filter: drop-shadow(0 0 22px rgba(236, 185, 114, 0.55));
-}
-/* 器のうしろで一度だけ広がる光の輪 */
-.lp-reveal-halo {
-  width: 1px;
-  height: 1px;
-  border-radius: 50%;
-  animation: lp-halo 2s ease-out 0.15s both;
-}
-@keyframes lp-halo {
-  0% {
-    box-shadow:
-      0 0 0 0 rgba(238, 186, 99, 0.33),
-      0 0 0 0 rgba(208, 154, 69, 0.19);
-  }
-  100% {
-    box-shadow:
-      0 0 0 150px rgba(238, 186, 99, 0),
-      0 0 0 260px rgba(208, 154, 69, 0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .lp-overlay,
-  .lp-reveal-veil,
-  .lp-reveal-item,
-  .lp-reveal-halo {
-    animation: none;
-  }
-  .lp-modal-in {
-    animation: none;
-    transform: translate(-50%, -50%);
-  }
-  .lp-caret {
-    transition: none;
-  }
-}
-
-/* ─────────────────────────────────────────────────────────────
-   飲み方ガイド（drinks）：一覧＝棚、詳細＝見開き。
-   差し色はカテゴリごとに --dg-accent で受ける（accentForSlug と同じ値）。
-   ───────────────────────────────────────────────────────────── */
-
-.dg-latin {
-  font-family: var(--font-latin);
-  font-size: 0.68rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--rice-dim);
-}
-
-.dg-label {
-  font-size: 0.68rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--rice-dim);
-}
-
-/* 一覧＝棚。器が並び、その足元を一本の灯りが通る。 */
-.dg-shelf {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1rem;
-  padding-bottom: 2.2rem;
-}
-.dg-shelf::after {
-  content: '';
-  position: absolute;
-  inset-inline: 0;
-  bottom: 0.6rem;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(207, 146, 71, 0.45), transparent);
-  box-shadow: 0 0 24px rgba(207, 146, 71, 0.35);
-}
-
-.dg-shelf__item {
-  display: grid;
-  justify-items: center;
-  gap: 0.3rem;
-  padding: 1.6rem 0.8rem 1.4rem;
-  /* 枠は四辺とも閉じる。下辺を開けて「棚の灯り」に載せる案は、
-     折り返した行の下には灯りが無く、枠が宙で途切れて見えるため採らない。 */
-  border: 1px solid transparent;
-  border-radius: 16px;
-  color: inherit;
-  transition:
-    transform 240ms cubic-bezier(0.16, 1, 0.3, 1),
-    background 240ms ease,
-    border-color 240ms ease;
-}
-.dg-shelf__item:hover {
-  transform: translateY(-6px);
-  border-color: var(--ink-line);
-  background: linear-gradient(165deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
-  color: inherit;
-}
-.dg-shelf__item:focus-visible {
-  outline: 2px solid var(--amber-bright);
-  outline-offset: 3px;
-}
-.dg-shelf__temp {
-  font-family: var(--font-latin);
-  font-variant-numeric: tabular-nums;
-  font-size: 0.78rem;
-  color: var(--dg-accent, var(--amber));
-}
-
-/* 適温の帯。下地は「冷たい → 温かい」、その上に飲み頃を差し色で灯す。 */
-.dg-track {
-  position: relative;
-  height: 10px;
-  border-radius: 999px;
-  border: 1px solid var(--ink-line);
-  background: linear-gradient(
-    90deg,
-    rgba(120, 170, 200, 0.28),
-    rgba(236, 226, 208, 0.1) 45%,
-    rgba(200, 110, 70, 0.3)
-  );
-}
-.dg-track__band {
-  position: absolute;
-  top: -1px;
-  bottom: -1px;
-  border-radius: 999px;
-  background: var(--dg-accent, var(--amber));
-  box-shadow: 0 0 14px color-mix(in oklab, var(--dg-accent, var(--amber)) 55%, transparent);
-}
-.dg-scale {
-  display: flex;
-  justify-content: space-between;
-  font-family: var(--font-latin);
-  font-variant-numeric: tabular-nums;
-  font-size: 0.72rem;
-  color: var(--rice-dim);
-}
-
-/* 詳細＝見開き。左の札は貼りついたまま、右の読み物だけが流れる。 */
-.dg-spread {
-  display: grid;
-  grid-template-columns: 20rem 1fr;
-  gap: 2.5rem;
-  align-items: start;
-}
-@media (max-width: 900px) {
-  .dg-spread {
-    grid-template-columns: 1fr;
-    gap: 1.8rem;
-  }
-}
-
-.dg-dossier {
-  display: grid;
-  gap: 1.4rem;
-  padding: 1.5rem;
-  position: sticky;
-  top: 1rem;
-}
-@media (max-width: 900px) {
-  .dg-dossier {
-    position: static;
-  }
-}
-
-.dg-figure {
-  font-family: var(--font-latin);
-  font-variant-numeric: tabular-nums;
-  font-size: 1.1rem;
-  color: var(--dg-accent, var(--amber));
-}
-
-.dg-fact {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  font-size: 0.85rem;
-}
-.dg-fact > span:last-child {
-  text-align: right;
-  font-size: 0.78rem;
-}
-
-.dg-sec {
-  padding: 2rem 0;
-  border-top: 1px solid var(--ink-line);
-}
-.dg-sec:first-of-type {
-  margin-top: 1.6rem;
-}
-.dg-sec__head {
-  display: flex;
-  align-items: baseline;
-  gap: 0.8rem;
-  margin-bottom: 1.4rem;
-}
-
-/* 手順。番号は琥珀の丸、次の番号へ細い軸が落ちる。 */
-.dg-steps {
-  display: grid;
-  gap: 1.4rem;
-}
-.dg-step {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 1rem;
-  align-items: start;
-}
-.dg-step__mark {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  font-family: var(--font-latin);
-  font-variant-numeric: tabular-nums;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--amber-bright);
-  background: rgba(207, 146, 71, 0.1);
-  border: 1px solid rgba(207, 146, 71, 0.3);
-}
-.dg-step:not(:last-child) .dg-step__mark::after {
-  content: '';
-  position: absolute;
-  top: 2.2rem;
-  left: 50%;
-  width: 1px;
-  height: calc(100% + 0.9rem);
-  background: linear-gradient(180deg, rgba(207, 146, 71, 0.4), transparent);
-}
-
-/* 見取り図。名前・説明・注記（適温や比率）の 3 列。狭い画面では説明が下へ回る。 */
-.dg-style {
-  display: grid;
-  grid-template-columns: 9rem 1fr auto;
-  gap: 1rem;
-  align-items: baseline;
-  padding: 0.85rem 0;
-  border-bottom: 1px solid var(--ink-line);
-}
-.dg-style:last-child {
-  border-bottom: 0;
-}
-.dg-style__meta {
-  font-family: var(--font-latin);
-  font-variant-numeric: tabular-nums;
-  font-size: 0.78rem;
-  white-space: nowrap;
-  color: var(--dg-accent, var(--amber));
-}
-@media (max-width: 640px) {
-  .dg-style {
-    grid-template-columns: 1fr auto;
-  }
-  .dg-style > p {
-    grid-column: 1 / -1;
-  }
-}
-
-/* 肴。葡萄色の札で、琥珀の並びに一点だけ違う温度を置く。 */
-.dg-pair {
-  padding: 0.35rem 0.8rem;
-  border-radius: 10px;
-  font-size: 0.85rem;
-  background: rgba(140, 74, 69, 0.16);
-  border: 1px solid rgba(140, 74, 69, 0.35);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dg-shelf__item {
-    transition: none;
-  }
-  .dg-shelf__item:hover {
-    transform: none;
+  button,
+  a {
+    transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease,
+      transform 180ms ease;
   }
 }

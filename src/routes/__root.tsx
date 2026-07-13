@@ -19,7 +19,7 @@ interface MyRouterContext {
 
 const APP_TITLE = env.VITE_APP_TITLE ?? "嗜み — Tashinami";
 const APP_DESCRIPTION =
-  "飲んだ一杯を静かに残す、大人のための一杯日記。ビール・ワイン・日本酒・ウイスキーの銘柄も、飲んだ場所も、その夜の気分も。記録は地図・TOP10・年次サマリーとなり、一年の物語になる。";
+  "飲んだ一杯を静かに残す、大人のための一杯日記。ビール・ワイン・日本酒・ウイスキーの銘柄も、出会った場所も、その夜の気分も。記録は図鑑・TOP10・年次サマリーとなり、一年の物語になる。";
 const APP_URL = env.VITE_APP_URL ?? "http://localhost:3000";
 const OGP_IMAGE = `${APP_URL}/ogp.jpg`;
 

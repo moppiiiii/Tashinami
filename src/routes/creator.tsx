@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
 
 import creatorImg from "@/assets/creator.webp";
+import { Button } from "@/components/common/button";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 
@@ -29,10 +30,14 @@ function CreatorPage() {
       <div className="mx-auto w-full max-w-3xl px-6">
         <Header />
 
-        <section className="lp-rise py-8 md:py-12">
-          <p className="lp-eyebrow mb-2">Creator</p>
-          <h1 className="lp-serif text-3xl md:text-4xl">制作者について</h1>
-          <p className="lp-dim mt-3 max-w-md leading-relaxed">
+        <section className="animate-lp-rise py-8 motion-reduce:animate-none md:py-12">
+          <p className="text-rice-dim mb-2 text-[0.68rem] font-bold tracking-[0.28em] uppercase">
+            Creator
+          </p>
+          <h1 className="font-jp-serif text-3xl font-semibold md:text-4xl">
+            制作者について
+          </h1>
+          <p className="text-rice-dim mt-3 max-w-md leading-relaxed">
             いねにこ
             と申します。嗜み（Tashinami）を一人でつくっている個人開発者です。
           </p>
@@ -45,8 +50,10 @@ function CreatorPage() {
 
           <div className="mt-10 space-y-8">
             <div className="space-y-2">
-              <h2 className="lp-serif text-xl">つくっている人</h2>
-              <p className="lp-dim text-sm leading-relaxed">
+              <h2 className="font-jp-serif text-xl font-semibold">
+                つくっている人
+              </h2>
+              <p className="text-rice-dim text-sm leading-relaxed">
                 普段は Web
                 アプリの開発をしています。お酒自体も好きですが、その夜の一杯にまつわる記憶を残したいと思い、自分のために
                 Tashinami をつくりはじめました。
@@ -54,37 +61,43 @@ function CreatorPage() {
             </div>
 
             <div className="space-y-2">
-              <h2 className="lp-serif text-xl">なぜ Tashinami をつくったか</h2>
-              <p className="lp-dim text-sm leading-relaxed">
+              <h2 className="font-jp-serif text-xl font-semibold">
+                なぜ Tashinami をつくったか
+              </h2>
+              <p className="text-rice-dim text-sm leading-relaxed">
                 「たくさん飲んだ量」ではなく、一杯ずつと向き合い、その記憶を静かに積み重ねる場所がほしかった——それがこのサービスの出発点です。ほどよく、品よく、味わう。記録が溜まるほど、自分の好み・行きつけ・季節の移ろいが立ち上がってくる。そんな体験を目指しています。
               </p>
             </div>
           </div>
 
           <div className="mt-10 flex flex-wrap items-center gap-3">
-            <a
-              href={`https://x.com/${X_HANDLE}`}
-              target="_blank"
-              rel="noreferrer"
-              className="lp-ghost no-underline"
-            >
-              X（旧Twitter）
-              <ExternalLink size={16} />
-            </a>
-            <a
-              href={PORTFOLIO_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="lp-ghost no-underline"
-            >
-              ポートフォリオ
-              <ExternalLink size={16} />
-            </a>
+            <Button asChild variant="ghost">
+              <a
+                href={`https://x.com/${X_HANDLE}`}
+                target="_blank"
+                rel="noreferrer"
+                className="no-underline"
+              >
+                X（旧Twitter）
+                <ExternalLink size={16} />
+              </a>
+            </Button>
+            <Button asChild variant="ghost">
+              <a
+                href={PORTFOLIO_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="no-underline"
+              >
+                ポートフォリオ
+                <ExternalLink size={16} />
+              </a>
+            </Button>
           </div>
 
-          <p className="lp-dim mt-8 text-sm">
+          <p className="text-rice-dim mt-8 text-sm">
             ご意見・不具合の報告などは
-            <Link to="/contact" className="lp-amber mx-1">
+            <Link to="/contact" className="text-amber-bright mx-1">
               お問い合わせ
             </Link>
             からお願いします。
