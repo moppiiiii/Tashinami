@@ -31,7 +31,7 @@ const showcase = {
     slug: "whisky",
     rating: 9.2,
     place: "BAR 灯 · 神楽坂",
-    date: "2025.6.28",
+    date: "2026.6.28",
     note: "余韻に蜜と樽。長い夜のはじまり。",
   },
   left: {
@@ -310,7 +310,7 @@ function Reflection() {
           <div className="mb-6 flex items-center justify-between">
             <div>
               <p className="text-rice-dim mb-2 text-[0.68rem] font-bold tracking-[0.28em] uppercase">
-                2025 · これまでの TOP10
+                2026 · これまでの TOP10
               </p>
               <h2 className="font-jp-serif text-2xl font-semibold">
                 好きな一杯が、並ぶ。
@@ -347,7 +347,7 @@ function Reflection() {
         <div className="lp-wrapped p-6 md:p-8">
           <div className="mb-6 flex items-center justify-between">
             <p className="text-rice-dim text-[0.68rem] font-bold tracking-[0.28em] uppercase">
-              2025 WRAPPED
+              2026 WRAPPED
             </p>
             <Sparkles className="text-amber-bright" size={20} />
           </div>

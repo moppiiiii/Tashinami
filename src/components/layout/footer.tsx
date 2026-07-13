@@ -51,7 +51,7 @@ export function Footer() {
             プライバシーポリシー
           </Link>
         </nav>
-        <p className="text-rice-dim text-xs">© 2025 Tashinami</p>
+        <p className="text-rice-dim text-xs">© 2026 Tashinami</p>
       </div>
     </footer>
   );

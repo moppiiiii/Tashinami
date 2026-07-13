@@ -1,15 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ExternalLink } from "lucide-react";
 
 import creatorImg from "@/assets/creator.webp";
-import { Button } from "@/components/common/button";
+import { Chip } from "@/components/common/chip";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 
 // 公開ページ（未ログインでも閲覧可）。制作者（運営者）自身の紹介。
 // 画像・外部リンクなど作り込む余地があるため、legal（md）とは分けて JSX で実装する。
-const X_HANDLE = "your_handle"; // TODO: 実アカウントに差し替え
-const PORTFOLIO_URL = "https://your-portfolio.example"; // TODO: 実 URL に差し替え
+// TODO: X アカウント・ポートフォリオが用意できたら、準備中の表示をリンクに差し替える。
 
 export const Route = createFileRoute("/creator")({
   head: () => ({
@@ -71,28 +69,8 @@ function CreatorPage() {
           </div>
 
           <div className="mt-10 flex flex-wrap items-center gap-3">
-            <Button asChild variant="ghost">
-              <a
-                href={`https://x.com/${X_HANDLE}`}
-                target="_blank"
-                rel="noreferrer"
-                className="no-underline"
-              >
-                X（旧Twitter）
-                <ExternalLink size={16} />
-              </a>
-            </Button>
-            <Button asChild variant="ghost">
-              <a
-                href={PORTFOLIO_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="no-underline"
-              >
-                ポートフォリオ
-                <ExternalLink size={16} />
-              </a>
-            </Button>
+            <Chip>X（旧Twitter） ・ 準備中</Chip>
+            <Chip>ポートフォリオ ・ 準備中</Chip>
           </div>
 
           <p className="text-rice-dim mt-8 text-sm">

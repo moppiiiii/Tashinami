@@ -1,25 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ExternalLink, MessageCircle } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 
-import { Button } from "@/components/common/button";
 import { Card } from "@/components/common/card";
 import { Chip } from "@/components/common/chip";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 
 // 連絡先。プラポリ・利用規約が案内する問い合わせ窓口の実体。
-// 問い合わせは X（旧Twitter）の DM で受け付ける。
-const X_HANDLE = "your_handle"; // TODO: 実アカウントに差し替え
-const X_URL = `https://x.com/${X_HANDLE}`;
-
+// TODO: X アカウントを用意したら、ハンドルとプロフィールへのリンクに差し替える。
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
       { title: "お問い合わせ — 嗜み（Tashinami）" },
       {
         name: "description",
-        content:
-          "嗜み（Tashinami）へのお問い合わせは X の DM で受け付けています。",
+        content: "嗜み（Tashinami）のお問い合わせ窓口は準備中です。",
       },
     ],
   }),
@@ -40,8 +35,7 @@ function ContactPage() {
             お問い合わせ
           </h1>
           <p className="text-rice-dim mt-3 max-w-md leading-relaxed">
-            ご意見・ご要望、不具合のご報告などは X（旧Twitter）の DM
-            で受け付けています。いただいた内容には、数日以内を目安にお返事します。
+            ご意見・ご要望、不具合のご報告をお寄せいただける窓口を準備しています。開設までもうしばらくお待ちください。
           </p>
 
           <Card className="mt-8 p-6 md:p-8">
@@ -52,26 +46,14 @@ function ContactPage() {
               <div className="min-w-0">
                 <p className="text-rice-dim text-xs">X（旧Twitter）</p>
                 <p className="font-jp-serif truncate text-lg font-semibold">
-                  @{X_HANDLE}
+                  準備中
                 </p>
               </div>
             </div>
             <p className="text-rice-dim mt-4 text-sm leading-relaxed">
-              下のボタンからプロフィールを開き、DM よりご連絡ください。
+              X の DM
+              で受け付ける予定です。アカウントを用意でき次第、ここに掲載します。
             </p>
-            <div className="mt-5">
-              <Button asChild>
-                <a
-                  href={X_URL}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="no-underline"
-                >
-                  X で問い合わせる
-                  <ExternalLink size={16} />
-                </a>
-              </Button>
-            </div>
           </Card>
         </section>
 

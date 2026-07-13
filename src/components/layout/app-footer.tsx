@@ -1,9 +1,13 @@
 import { Link } from "@tanstack/react-router";
 
+import { jstNow } from "@/lib/date";
+
 // ログイン後の画面用フッター。公開ページの Footer とは別物で、
 // マーケ導線（コンセプト・制作者・飲み方）は載せない。
 // 登録済みの人がいつでも法務文書と問い合わせ窓口に辿り着けるための、それだけの帯。
 export function AppFooter() {
+  const year = jstNow().getUTCFullYear();
+
   return (
     <footer className="py-8">
       <div className="via-ink-line mb-5 h-px bg-linear-to-r from-transparent to-transparent" />
@@ -28,7 +32,7 @@ export function AppFooter() {
             お問い合わせ
           </Link>
         </nav>
-        <p className="text-rice-dim text-xs">© 2025 Tashinami</p>
+        <p className="text-rice-dim text-xs">© {year} Tashinami</p>
       </div>
     </footer>
   );
