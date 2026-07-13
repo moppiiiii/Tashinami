@@ -10,6 +10,7 @@ import {
 
 // 飲んだ一杯の記録（コア）。ユーザー所有。records.category_id → categories.id（FK）を
 // embed で一緒に取る。user_id は DB 側 default auth.uid() で自動付与するため入力に含めない。
+// place_name は「出会った場所」（買った酒屋・飲んだ店・旅先の蔵・通販）。飲んだ場所ではない（docs/concept.md §5）。
 // DDL/インデックス/RLS は別途 Supabase に適用する。
 
 // records.category_id の埋め込み先（id, name のみ表示に使う）。
@@ -77,7 +78,7 @@ export type DrinkRecord = z.infer<typeof RecordResponseSchema>;
 export const AddRecordInput = z.object({
   name: z.string().min(1),
   categoryId: z.string().uuid().nullable().optional(),
-  rating: z.number().int().min(1).max(5).nullable().optional(),
+  rating: z.number().min(0).max(10).nullable().optional(),
   isFavorite: z.boolean().optional(),
   memo: z.string().nullable().optional(),
   meta: z.json().nullable().optional(),
@@ -92,7 +93,7 @@ export const UpdateRecordInput = z.object({
   id: z.string().uuid(),
   name: z.string().min(1).optional(),
   categoryId: z.string().uuid().nullable().optional(),
-  rating: z.number().int().min(1).max(5).nullable().optional(),
+  rating: z.number().min(0).max(10).nullable().optional(),
   isFavorite: z.boolean().optional(),
   memo: z.string().nullable().optional(),
   meta: z.json().nullable().optional(),
@@ -110,7 +111,7 @@ export const RemoveRecordInput = z.object({ id: z.string().uuid() });
 const RecordInsertData = z.object({
   name: z.string().min(1),
   category_id: z.string().uuid().nullable().optional(),
-  rating: z.number().int().min(1).max(5).nullable().optional(),
+  rating: z.number().min(0).max(10).nullable().optional(),
   is_favorite: z.boolean().optional(),
   memo: z.string().nullable().optional(),
   meta: z.json().nullable().optional(),
@@ -124,7 +125,7 @@ const RecordInsertData = z.object({
 const RecordUpdateData = z.object({
   name: z.string().min(1).optional(),
   category_id: z.string().uuid().nullable().optional(),
-  rating: z.number().int().min(1).max(5).nullable().optional(),
+  rating: z.number().min(0).max(10).nullable().optional(),
   is_favorite: z.boolean().optional(),
   memo: z.string().nullable().optional(),
   meta: z.json().nullable().optional(),

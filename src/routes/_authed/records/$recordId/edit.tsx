@@ -2,6 +2,8 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 
+import { Button } from "@/components/common/button";
+import { Card } from "@/components/common/card";
 import { RecordDeleteButton } from "@/components/records/record-delete-button";
 import { RecordForm } from "@/components/records/record-form";
 import { categoriesQueryOptions } from "@/server/categories";
@@ -29,13 +31,15 @@ function EditRecordPage() {
     <main className="tashinami-lp min-h-dvh">
       <div className="mx-auto w-full max-w-2xl px-6">
         <header className="py-6">
-          <Link to="/records" className="lp-ghost text-sm no-underline">
-            <ArrowLeft size={16} />
-            記録一覧へ
-          </Link>
+          <Button asChild variant="ghost">
+            <Link to="/records" className="text-sm no-underline">
+              <ArrowLeft size={16} />
+              記録一覧へ
+            </Link>
+          </Button>
         </header>
 
-        <section className="lp-rise pb-16">
+        <section className="animate-lp-rise pb-16 motion-reduce:animate-none">
           {record ? (
             <>
               <RecordForm
@@ -49,18 +53,22 @@ function EditRecordPage() {
             </>
           ) : (
             // 削除直後の戻る操作などで、この id はもう棚に無い。
-            <div className="lp-card px-6 py-14 text-center">
-              <h1 className="lp-serif text-lg">この一杯は棚にありません。</h1>
-              <p className="lp-dim mt-2 text-sm leading-relaxed">
+            <Card className="px-6 py-14 text-center">
+              <h1 className="font-jp-serif text-lg font-semibold">
+                この一杯は棚にありません。
+              </h1>
+              <p className="text-rice-dim mt-2 text-sm leading-relaxed">
                 すでに外されたか、URL が違っているようです。
               </p>
-              <Link
-                to="/records"
-                className="lp-ghost mt-6 inline-flex text-sm no-underline"
-              >
-                記録一覧へ戻る
-              </Link>
-            </div>
+              <Button asChild variant="ghost">
+                <Link
+                  to="/records"
+                  className="mt-6 inline-flex text-sm no-underline"
+                >
+                  記録一覧へ戻る
+                </Link>
+              </Button>
+            </Card>
           )}
         </section>
       </div>

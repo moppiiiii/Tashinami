@@ -17,7 +17,7 @@ TanStack Start のファイルベースルーティング規約と、このテ�
 
 1. **単独ページは平置き、子を持つセグメントはディレクトリ**。
    - 子のないページは平置き: URL `/about` → `src/routes/about.tsx`。
-   - 動的セグメントは `$` 接頭辞: `/todos/$id` → `src/routes/todos.$id.tsx`。
+   - 動的セグメントは `$` 接頭辞: `/drinks/$slug` → `src/routes/drinks/$slug.tsx`。
    - 同じセグメントの下にページが 2 つ以上できたらディレクトリに切る（ドット区切りで伸ばさない）。
      `/records` `/records/new` `/records/$recordId/edit` →
      `src/routes/_authed/records/{index,new}.tsx` ＋ `records/$recordId/edit.tsx`。

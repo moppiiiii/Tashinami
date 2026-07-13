@@ -14,8 +14,8 @@ src/
         $recordId/        # 動的セグメントは $ 接頭辞
           edit.tsx        # URL: /records/:recordId/edit
   components/
-    ui/                   # shadcn/ui プリミティブ（考えずに置く）
-    <feature>/            # 機能ごとの画面パーツ（例: todos/）
+    common/               # 自作の共通見た目部品（Button, Card, Chip, Meter, Field, Input...）
+    <feature>/            # 機能ごとの画面パーツ（例: records/, zukan/）
   hooks/                  # use-<action>-<resource>.ts（楽観的更新の useMutation など）
   server/                 # serverFn（fetch / mutation 両方）＋ queryOptions。1 リソース 1 ファイル
     <resource>.ts
@@ -44,7 +44,9 @@ src/
 
 | 判断 | 置き場 |
 |---|---|
-| 汎用の見た目部品（button, input...） | `components/ui/` |
+| shadcn/ui から持ってきたプリミティブ | `components/ui/` |
+| 自作の共通見た目部品（Card, Chip, Meter, Field...） | `components/common/` |
+| 第三者コンポーネント（Link・アイコン等）に掛けるクラス | `components/common/styles.ts` |
 | 特定機能の画面パーツ | `components/<feature>/` |
 | サーバーで動かす処理（fetch / mutation） | `server/<resource>.ts` |
 | zod スキーマ・取得クエリ | `schemas/<resource>.ts` |
@@ -55,7 +57,7 @@ src/
 原則:
 
 - **routes は薄く**。loader で fetch を起動し、ロジックは `server/` `hooks/` `components/` から import するだけ。
-- **フォルダは横に並べる**。深い階層は掘らない（`server/todos.ts` であって `server/todos/queries/...` ではない）。
+- **フォルダは横に並べる**。深い階層は掘らない（`server/records.ts` であって `server/records/queries/...` ではない）。
 - **環境変数は `env.ts` 経由**。`import.meta.env.X` を直接使わない（例: ページ `<title>` は `env.VITE_APP_TITLE` を `__root.tsx` で参照）。
 
 ## フォーム
@@ -91,11 +93,11 @@ router.tsx
 
 ```
 route loader
-  → queryClient.ensureQueryData(todosQueryOptions())
-    → getTodos()  [serverFn]
-      → $supabaseServer()("@select/todos", { filter })
-        → postgrest → zod 検証 → Result<Todo[]>
-  → コンポーネントは useSuspenseQuery(todosQueryOptions()) で同じキャッシュを購読
+  → queryClient.ensureQueryData(recordsQueryOptions())
+    → getRecords()  [serverFn]
+      → $supabaseServer()("@select/records", { filter })
+        → postgrest → zod 検証 → Result<DrinkRecord[]>
+  → コンポーネントは useSuspenseQuery(recordsQueryOptions()) で同じキャッシュを購読
 ```
 
 初回表示はサーバーで fetch 済みのデータがキャッシュに載った状態でレンダリングされる。
@@ -104,10 +106,10 @@ route loader
 
 ```
 コンポーネント
-  → useToggleTodo().mutate(vars)        [hooks/]
+  → useUpdateRecord().mutate(vars)       [hooks/]
     → onMutate: TanStack Query キャッシュを即時更新（楽観）
-    → mutationFn: toggleTodo({ data })  [serverFn]
-       → $supabaseServer()("@update/todos", { data, match })
+    → mutationFn: updateRecord({ data })  [serverFn]
+       → $supabaseServer()("@update/records", { data, match })
     → onError: スナップショットへ巻き戻し
     → onSettled: invalidateQueries で再同期
 ```

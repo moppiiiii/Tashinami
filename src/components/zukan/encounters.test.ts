@@ -1,13 +1,9 @@
 import { describe, expect, it } from "vitest";
 
+import { normalizeName } from "@/lib/match";
 import type { DrinkRecord } from "@/schemas/records";
 
-import {
-  buildEncounters,
-  findEncounter,
-  normalizeName,
-  searchEncounters,
-} from "./encounters";
+import { buildEncounters, findEncounter, searchEncounters } from "./encounters";
 
 const WINE = { id: "11111111-1111-1111-1111-111111111111", name: "ワイン" };
 const BEER = { id: "22222222-2222-2222-2222-222222222222", name: "ビール" };

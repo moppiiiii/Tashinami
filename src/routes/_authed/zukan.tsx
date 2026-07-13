@@ -3,6 +3,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Plus, Wine } from "lucide-react";
 import { useMemo } from "react";
 
+import { Button } from "@/components/common/button";
+import { Card } from "@/components/common/card";
+import { Chip } from "@/components/common/chip";
+import { AppFooter } from "@/components/layout/app-footer";
 import { AuthedHeader } from "@/components/layout/authed-header";
 import { EncounterCard } from "@/components/zukan/encounter-card";
 import {
@@ -57,10 +61,14 @@ function ZukanPage() {
       <div className="mx-auto w-full max-w-4xl px-6">
         <AuthedHeader />
 
-        <section className="lp-rise py-8 md:py-12">
-          <p className="lp-eyebrow mb-3">Collection</p>
-          <h1 className="lp-serif text-3xl md:text-4xl">出会いの図鑑</h1>
-          <p className="lp-dim mt-3 max-w-md leading-relaxed">
+        <section className="animate-lp-rise py-8 motion-reduce:animate-none md:py-12">
+          <p className="text-rice-dim mb-3 text-[0.68rem] font-bold tracking-[0.28em] uppercase">
+            Collection
+          </p>
+          <h1 className="font-jp-serif text-3xl font-semibold md:text-4xl">
+            出会いの図鑑
+          </h1>
+          <p className="text-rice-dim mt-3 max-w-md leading-relaxed">
             何杯飲んだかではなく、
             <span className="text-[color:var(--rice)]">
               何と初めて出会ったか
@@ -103,6 +111,8 @@ function ZukanPage() {
             </>
           )}
         </section>
+
+        <AppFooter />
       </div>
     </main>
   );
@@ -112,12 +122,14 @@ function Stat({ value, label }: { value: number; label: string }) {
   return (
     <div className="flex flex-col gap-1">
       <b
-        className="lp-serif lp-latin text-3xl leading-none tabular-nums"
+        className="font-jp-serif font-latin text-3xl leading-none font-semibold tabular-nums"
         style={{ color: "var(--rice)" }}
       >
         {value}
       </b>
-      <span className="lp-eyebrow">{label}</span>
+      <span className="text-rice-dim text-[0.68rem] font-bold tracking-[0.28em] uppercase">
+        {label}
+      </span>
     </div>
   );
 }
@@ -136,9 +148,11 @@ function CategorySection({
   return (
     <section className="mt-11">
       <div className="mb-5 flex items-baseline gap-3 border-b border-[color:var(--ink-line)] pb-3">
-        <span className="lp-eyebrow">{latin}</span>
-        <h2 className="lp-serif text-xl">{title}</h2>
-        <span className="lp-dim ml-auto text-sm tabular-nums">
+        <span className="text-rice-dim text-[0.68rem] font-bold tracking-[0.28em] uppercase">
+          {latin}
+        </span>
+        <h2 className="font-jp-serif text-xl font-semibold">{title}</h2>
+        <span className="text-rice-dim ml-auto text-sm tabular-nums">
           {items.length} と出会った
         </span>
       </div>
@@ -153,21 +167,25 @@ function CategorySection({
 
 function EmptyZukan() {
   return (
-    <div className="lp-card mt-8 flex flex-col items-center px-6 py-16 text-center">
-      <span className="lp-chip mb-5 flex size-14 items-center justify-center rounded-full p-0">
+    <Card className="mt-8 flex flex-col items-center px-6 py-16 text-center">
+      <Chip className="mb-5 flex size-14 items-center justify-center rounded-full p-0">
         <Wine size={22} />
-      </span>
-      <h2 className="lp-serif text-lg">図鑑は、まだ暗いままです。</h2>
-      <p className="lp-dim mt-2 max-w-xs text-sm leading-relaxed">
+      </Chip>
+      <h2 className="font-jp-serif text-lg font-semibold">
+        図鑑は、まだ暗いままです。
+      </h2>
+      <p className="text-rice-dim mt-2 max-w-xs text-sm leading-relaxed">
         最初の一杯を記録すると、ここに最初の灯りがともります。
       </p>
       <div className="mt-6">
-        <Link to="/records/new" className="lp-cta no-underline">
-          <Plus size={18} />
-          一杯を記録する
-        </Link>
+        <Button asChild>
+          <Link to="/records/new" className="no-underline">
+            <Plus size={18} />
+            一杯を記録する
+          </Link>
+        </Button>
       </div>
-    </div>
+    </Card>
   );
 }
 

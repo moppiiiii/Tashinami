@@ -1,23 +1,18 @@
 import { Heart } from "lucide-react";
 
+import { Card } from "@/components/common/card";
+import { Chip } from "@/components/common/chip";
 import { DrinkImage } from "@/components/zukan/drink-image";
 import { accentForSlug } from "@/components/zukan/encounters";
+import { formatJstDate, jstDaysAgo } from "@/lib/date";
 import type { Category } from "@/schemas/categories";
 import type { DrinkRecord } from "@/schemas/records";
 
 import { ScoreMeter } from "./score-meter";
 
-const MS_DAY = 86_400_000;
-
-function dayStart(d: Date): number {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-}
-
-// home では絶対日付より「どれくらい前か」の気配のほうが要る。
 function relativeDay(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "";
-  const days = Math.round((dayStart(new Date()) - dayStart(d)) / MS_DAY);
+  const days = jstDaysAgo(iso);
+  if (days == null) return "";
   if (days <= 0) return "今日";
   if (days === 1) return "昨夜";
   if (days < 7) return `${days}日前`;
@@ -27,13 +22,8 @@ function relativeDay(iso: string): string {
   return `${Math.floor(days / 365)}年前`;
 }
 
-function absoluteDay(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "";
-  return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
-}
+const absoluteDay = formatJstDate;
 
-// 直近の一杯。卓に置かれた実物として、その夜の言葉ごと大きく扱う。
 function TonightsPour({
   record,
   slug,
@@ -44,7 +34,7 @@ function TonightsPour({
   const accent = accentForSlug(slug);
 
   return (
-    <article className="lp-card relative overflow-hidden">
+    <Card as="article" className="relative overflow-hidden">
       <span
         className="lp-tonight__glow"
         aria-hidden="true"
@@ -56,35 +46,35 @@ function TonightsPour({
       <div className="relative grid items-center gap-10 p-8 sm:grid-cols-[1fr_auto] sm:gap-14 sm:p-12">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <span className="lp-kicker">{relativeDay(record.drunkAt)}</span>
-            <span className="lp-latin lp-dim text-xs tabular-nums">
+            <span className="font-latin text-amber-bright tracking-[0.01em] italic">
+              {relativeDay(record.drunkAt)}
+            </span>
+            <span className="font-latin text-rice-dim text-xs tabular-nums">
               {absoluteDay(record.drunkAt)}
             </span>
-            {record.category ? (
-              <span className="lp-chip">{record.category.name}</span>
-            ) : null}
+            {record.category ? <Chip>{record.category.name}</Chip> : null}
             {record.isFavorite ? (
               <Heart
                 size={13}
                 fill="currentColor"
-                className="lp-fav"
+                className="text-amber-bright drop-shadow-[0_0_6px_rgba(236,185,114,0.45)]"
                 aria-label="お気に入り"
               />
             ) : null}
           </div>
 
-          <h3 className="lp-serif mt-1.5 text-3xl leading-tight text-balance md:text-4xl">
+          <h3 className="font-jp-serif mt-1.5 text-3xl leading-tight font-semibold text-balance md:text-4xl">
             {record.name}
           </h3>
 
           {record.memo ? (
-            <p className="lp-serif mt-5 max-w-[34ch] text-[17px] leading-loose">
+            <p className="font-jp-serif mt-5 max-w-[34ch] text-[17px] leading-loose font-semibold">
               {record.memo}
             </p>
           ) : null}
 
           {record.placeName ? (
-            <p className="lp-dim mt-6 text-[13px]">{record.placeName}</p>
+            <p className="text-rice-dim mt-6 text-[13px]">{record.placeName}</p>
           ) : null}
 
           {record.rating != null ? (
@@ -94,15 +84,14 @@ function TonightsPour({
           ) : null}
         </div>
 
-        <span className="lp-rise flex justify-center">
+        <span className="animate-lp-rise flex justify-center motion-reduce:animate-none">
           <DrinkImage slug={slug} size={220} eager />
         </span>
       </div>
-    </article>
+    </Card>
   );
 }
 
-// それ以前の一杯。枠は持たず、罫の上に一行ずつ灯る。
 function PourRow({
   record,
   slug,
@@ -114,7 +103,7 @@ function PourRow({
     <li className="lp-row">
       <div className="lp-row__when">
         <p className="text-[13px]">{relativeDay(record.drunkAt)}</p>
-        <p className="lp-latin lp-dim text-[11px] tabular-nums">
+        <p className="font-latin text-rice-dim text-[11px] tabular-nums">
           {absoluteDay(record.drunkAt)}
         </p>
       </div>
@@ -125,26 +114,28 @@ function PourRow({
 
       <div className="lp-row__main min-w-0">
         <div className="flex items-center gap-2">
-          <h3 className="lp-serif truncate text-lg">{record.name}</h3>
+          <h3 className="font-jp-serif truncate text-lg font-semibold">
+            {record.name}
+          </h3>
           {record.isFavorite ? (
             <Heart
               size={12}
               fill="currentColor"
-              className="lp-fav shrink-0"
+              className="text-amber-bright shrink-0 drop-shadow-[0_0_6px_rgba(236,185,114,0.45)]"
               aria-label="お気に入り"
             />
           ) : null}
         </div>
         <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
-          {record.category ? (
-            <span className="lp-chip">{record.category.name}</span>
-          ) : null}
+          {record.category ? <Chip>{record.category.name}</Chip> : null}
           {record.placeName ? (
-            <span className="lp-dim text-xs">{record.placeName}</span>
+            <span className="text-rice-dim text-xs">{record.placeName}</span>
           ) : null}
         </div>
         {record.memo ? (
-          <p className="lp-dim mt-2 truncate text-[13px]">{record.memo}</p>
+          <p className="text-rice-dim mt-2 truncate text-[13px]">
+            {record.memo}
+          </p>
         ) : null}
       </div>
 
@@ -155,7 +146,6 @@ function PourRow({
   );
 }
 
-// home の「最近の一杯」。直近の一杯を卓に置き、それ以前を列に灯す。
 export function RecentPours({
   records,
   categories,
@@ -182,7 +172,7 @@ export function RecentPours({
           ))}
         </ul>
       ) : (
-        <p className="lp-dim py-4 text-center text-sm">
+        <p className="text-rice-dim py-4 text-center text-sm">
           次の一杯を、ここで待っています。
         </p>
       )}

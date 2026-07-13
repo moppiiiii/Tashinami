@@ -30,20 +30,22 @@ function DrinksIndexPage() {
       <div className="mx-auto w-full max-w-5xl px-6">
         <AdaptiveHeader />
 
-        <section className="lp-rise py-8 text-center md:py-12">
-          <p className="lp-kicker text-lg">その一杯を、いちばん美味しく。</p>
-          <h1 className="lp-serif mt-3 text-3xl leading-tight md:text-5xl">
+        <section className="animate-lp-rise py-8 text-center motion-reduce:animate-none md:py-12">
+          <p className="font-latin text-amber-bright text-lg tracking-[0.01em] italic">
+            その一杯を、いちばん美味しく。
+          </p>
+          <h1 className="font-jp-serif mt-3 text-3xl leading-tight font-semibold md:text-5xl">
             飲み方を、知る。
           </h1>
-          <p className="lp-dim mx-auto mt-5 max-w-lg leading-relaxed">
+          <p className="text-rice-dim mx-auto mt-5 max-w-lg leading-relaxed">
             同じ酒でも、温度と器と注ぎ方で、まるで別のものになる。
             記録する前に、まず一杯を整える。
           </p>
         </section>
 
-        <section className="lp-rise lp-rise-2 pb-4">
+        <section className="animate-lp-rise pb-4 [animation-delay:120ms] motion-reduce:animate-none">
           <DrinkShelf />
-          <p className="lp-dim mt-6 text-center text-sm">
+          <p className="text-rice-dim mt-6 text-center text-sm">
             器を選ぶと、その一杯の適温・器・手順・肴がひらく。
           </p>
         </section>

@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 
 import { buildEncounters } from "@/components/zukan/encounters";
+import { isSameJstMonth, jstNow } from "@/lib/date";
 import type { DrinkRecord } from "@/schemas/records";
 
 // 最頻値とその出現数。候補が無ければ null。
@@ -12,14 +13,6 @@ function mostCommon(values: string[]): { name: string; count: number } | null {
     if (!top || count > top.count) top = { name, count };
   }
   return top;
-}
-
-function inThisMonth(iso: string, now: Date): boolean {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return false;
-  return (
-    d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth()
-  );
 }
 
 function Stat({
@@ -35,20 +28,21 @@ function Stat({
 }) {
   return (
     <div className="lp-stat">
-      <p className="lp-dim text-xs">{label}</p>
-      <p className="lp-serif mt-0.5 truncate text-2xl leading-tight">
+      <p className="text-rice-dim text-xs">{label}</p>
+      <p className="font-jp-serif mt-0.5 truncate text-2xl leading-tight font-semibold">
         {value}
-        {unit ? <span className="lp-dim ml-1 text-sm">{unit}</span> : null}
+        {unit ? (
+          <span className="text-rice-dim ml-1 text-sm">{unit}</span>
+        ) : null}
       </p>
-      {sub ? <p className="lp-amber mt-0.5 text-xs">{sub}</p> : null}
+      {sub ? <p className="text-amber-bright mt-0.5 text-xs">{sub}</p> : null}
     </div>
   );
 }
 
-// 棚の厚み。記録が溜まるほど、好みと行きつけが輪郭を持つ。
 export function ShelfStats({ records }: { records: DrinkRecord[] }) {
   const stats = useMemo(() => {
-    const now = new Date();
+    const now = jstNow();
     const places = records
       .map((r) => r.placeName?.trim())
       .filter((p): p is string => !!p);
@@ -58,7 +52,7 @@ export function ShelfStats({ records }: { records: DrinkRecord[] }) {
     );
 
     return {
-      thisMonth: records.filter((r) => inThisMonth(r.drunkAt, now)).length,
+      thisMonth: records.filter((r) => isSameJstMonth(r.drunkAt, now)).length,
       encounters: buildEncounters(records).length,
       topPlace: mostCommon(places),
       topCategory,
@@ -74,7 +68,7 @@ export function ShelfStats({ records }: { records: DrinkRecord[] }) {
       <Stat label="今月" value={`${stats.thisMonth}`} unit="杯" />
       <Stat label="出会った銘柄" value={`${stats.encounters}`} unit="種" />
       <Stat
-        label="よく行く場所"
+        label="よく出会う場所"
         value={stats.topPlace?.name ?? "—"}
         sub={stats.topPlace ? `${stats.topPlace.count} 回` : undefined}
       />
