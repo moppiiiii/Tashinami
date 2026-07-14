@@ -4,21 +4,19 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/common/button";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
+import { pageHead } from "@/lib/seo";
 
 // 公開ページ（未ログインでも閲覧可）。docs/concept.md の §1（コンセプト）と
 // §9（非目標）を、機能紹介ではなく読み物として提示する。LP が語らない
 // 「やらないこと」を明言する場所。
 export const Route = createFileRoute("/concept")({
-  head: () => ({
-    meta: [
-      { title: "コンセプト — 嗜み（Tashinami）" },
-      {
-        name: "description",
-        content:
-          "嗜み（Tashinami）は飲んだ量を競うアプリではありません。大切にすること、やらないことを記します。",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "コンセプト — 嗜み（Tashinami）",
+      description:
+        "嗜み（Tashinami）は飲んだ量を競うアプリではありません。大切にすること、やらないことを記します。",
+      path: "/concept",
+    }),
   component: ConceptPage,
 });
 

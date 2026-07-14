@@ -4,6 +4,7 @@ import { DrinkGuideView } from "@/components/drinks/drink-guide";
 import { AdaptiveHeader } from "@/components/layout/adaptive-header";
 import { Footer } from "@/components/layout/footer";
 import { getDrinkGuide } from "@/content/drinks";
+import { pageHead } from "@/lib/seo";
 import { userQueryOptions } from "@/server/auth";
 
 // 公開ページ（未ログインでも閲覧可）。カテゴリ 1 つ分の飲み方。
@@ -17,17 +18,14 @@ export const Route = createFileRoute("/drinks/$slug")({
     await context.queryClient.ensureQueryData(userQueryOptions());
     return guide;
   },
-  head: ({ loaderData: guide }) => ({
-    meta: guide
-      ? [
-          { title: `${guide.name}の飲み方 — 嗜み（Tashinami）` },
-          {
-            name: "description",
-            content: `${guide.name}の適温・器・${guide.stepsTitle}・合わせる肴。${guide.tagline}`,
-          },
-        ]
-      : [],
-  }),
+  head: ({ loaderData: guide }) =>
+    guide
+      ? pageHead({
+          title: `${guide.name}の飲み方 — 嗜み（Tashinami）`,
+          description: `${guide.name}の適温・器・合わせる肴と、${guide.methods.map((method) => method.name).join("・")}の${guide.methodsTitle}。${guide.tagline}`,
+          path: `/drinks/${guide.slug}`,
+        })
+      : {},
   component: DrinkGuidePage,
 });
 

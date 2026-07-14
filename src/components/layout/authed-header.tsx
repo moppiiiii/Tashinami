@@ -34,7 +34,6 @@ export function AuthedHeader() {
           <Link
             key={item.to}
             to={item.to}
-            activeOptions={{ exact: true }}
             activeProps={{ className: "text-amber-bright" }}
             inactiveProps={{
               className:
