@@ -28,6 +28,11 @@ UI を書くときは `docs/styling.md` の「角括弧テスト」に従う。�
 
 条件に当たらないものを CSS に書かない。色は生値の `rgba()` ではなくトークン＋ `color-mix()` で導出する。
 
+## コメント・jsDoc
+
+- 過剰に書かない。必要なことだけ端的に記載すること。
+- 1 ~ 2 行のコメントを基本とし、コードから文脈が把握できない内容のみコメントに記載すること。
+
 ## 仕上げ
 
 変更後は `bun run check`（tsgo ＋ oxlint ＋ oxfmt）を通す。整形は `bun run format`（oxfmt）。型のみは `bun run typecheck`（tsgo）。

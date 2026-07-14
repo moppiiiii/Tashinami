@@ -22,8 +22,10 @@ import { Route as DrinksSlugRouteImport } from './routes/drinks/$slug'
 import { Route as AuthedZukanRouteImport } from './routes/_authed/zukan'
 import { Route as AuthedTop10RouteImport } from './routes/_authed/top10'
 import { Route as AuthedHomeRouteImport } from './routes/_authed/home'
+import { Route as AuthedSummaryIndexRouteImport } from './routes/_authed/summary/index'
 import { Route as AuthedRecordsIndexRouteImport } from './routes/_authed/records/index'
 import { Route as AuthedPlacesIndexRouteImport } from './routes/_authed/places/index'
+import { Route as AuthedSummaryYearRouteImport } from './routes/_authed/summary/$year'
 import { Route as AuthedRecordsNewRouteImport } from './routes/_authed/records/new'
 import { Route as AuthedPlacesPlaceKeyRouteImport } from './routes/_authed/places/$placeKey'
 import { Route as AuthedRecordsRecordIdEditRouteImport } from './routes/_authed/records/$recordId/edit'
@@ -92,6 +94,11 @@ const AuthedHomeRoute = AuthedHomeRouteImport.update({
   path: '/home',
   getParentRoute: () => AuthedRouteRoute,
 } as any)
+const AuthedSummaryIndexRoute = AuthedSummaryIndexRouteImport.update({
+  id: '/summary/',
+  path: '/summary/',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
 const AuthedRecordsIndexRoute = AuthedRecordsIndexRouteImport.update({
   id: '/records/',
   path: '/records/',
@@ -100,6 +107,11 @@ const AuthedRecordsIndexRoute = AuthedRecordsIndexRouteImport.update({
 const AuthedPlacesIndexRoute = AuthedPlacesIndexRouteImport.update({
   id: '/places/',
   path: '/places/',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedSummaryYearRoute = AuthedSummaryYearRouteImport.update({
+  id: '/summary/$year',
+  path: '/summary/$year',
   getParentRoute: () => AuthedRouteRoute,
 } as any)
 const AuthedRecordsNewRoute = AuthedRecordsNewRouteImport.update({
@@ -134,8 +146,10 @@ export interface FileRoutesByFullPath {
   '/drinks/': typeof DrinksIndexRoute
   '/places/$placeKey': typeof AuthedPlacesPlaceKeyRoute
   '/records/new': typeof AuthedRecordsNewRoute
+  '/summary/$year': typeof AuthedSummaryYearRoute
   '/places/': typeof AuthedPlacesIndexRoute
   '/records/': typeof AuthedRecordsIndexRoute
+  '/summary/': typeof AuthedSummaryIndexRoute
   '/records/$recordId/edit': typeof AuthedRecordsRecordIdEditRoute
 }
 export interface FileRoutesByTo {
@@ -153,8 +167,10 @@ export interface FileRoutesByTo {
   '/drinks': typeof DrinksIndexRoute
   '/places/$placeKey': typeof AuthedPlacesPlaceKeyRoute
   '/records/new': typeof AuthedRecordsNewRoute
+  '/summary/$year': typeof AuthedSummaryYearRoute
   '/places': typeof AuthedPlacesIndexRoute
   '/records': typeof AuthedRecordsIndexRoute
+  '/summary': typeof AuthedSummaryIndexRoute
   '/records/$recordId/edit': typeof AuthedRecordsRecordIdEditRoute
 }
 export interface FileRoutesById {
@@ -174,8 +190,10 @@ export interface FileRoutesById {
   '/drinks/': typeof DrinksIndexRoute
   '/_authed/places/$placeKey': typeof AuthedPlacesPlaceKeyRoute
   '/_authed/records/new': typeof AuthedRecordsNewRoute
+  '/_authed/summary/$year': typeof AuthedSummaryYearRoute
   '/_authed/places/': typeof AuthedPlacesIndexRoute
   '/_authed/records/': typeof AuthedRecordsIndexRoute
+  '/_authed/summary/': typeof AuthedSummaryIndexRoute
   '/_authed/records/$recordId/edit': typeof AuthedRecordsRecordIdEditRoute
 }
 export interface FileRouteTypes {
@@ -195,8 +213,10 @@ export interface FileRouteTypes {
     | '/drinks/'
     | '/places/$placeKey'
     | '/records/new'
+    | '/summary/$year'
     | '/places/'
     | '/records/'
+    | '/summary/'
     | '/records/$recordId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -214,8 +234,10 @@ export interface FileRouteTypes {
     | '/drinks'
     | '/places/$placeKey'
     | '/records/new'
+    | '/summary/$year'
     | '/places'
     | '/records'
+    | '/summary'
     | '/records/$recordId/edit'
   id:
     | '__root__'
@@ -234,8 +256,10 @@ export interface FileRouteTypes {
     | '/drinks/'
     | '/_authed/places/$placeKey'
     | '/_authed/records/new'
+    | '/_authed/summary/$year'
     | '/_authed/places/'
     | '/_authed/records/'
+    | '/_authed/summary/'
     | '/_authed/records/$recordId/edit'
   fileRoutesById: FileRoutesById
 }
@@ -345,6 +369,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedHomeRouteImport
       parentRoute: typeof AuthedRouteRoute
     }
+    '/_authed/summary/': {
+      id: '/_authed/summary/'
+      path: '/summary'
+      fullPath: '/summary/'
+      preLoaderRoute: typeof AuthedSummaryIndexRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
     '/_authed/records/': {
       id: '/_authed/records/'
       path: '/records'
@@ -357,6 +388,13 @@ declare module '@tanstack/react-router' {
       path: '/places'
       fullPath: '/places/'
       preLoaderRoute: typeof AuthedPlacesIndexRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/summary/$year': {
+      id: '/_authed/summary/$year'
+      path: '/summary/$year'
+      fullPath: '/summary/$year'
+      preLoaderRoute: typeof AuthedSummaryYearRouteImport
       parentRoute: typeof AuthedRouteRoute
     }
     '/_authed/records/new': {
@@ -389,8 +427,10 @@ interface AuthedRouteRouteChildren {
   AuthedZukanRoute: typeof AuthedZukanRoute
   AuthedPlacesPlaceKeyRoute: typeof AuthedPlacesPlaceKeyRoute
   AuthedRecordsNewRoute: typeof AuthedRecordsNewRoute
+  AuthedSummaryYearRoute: typeof AuthedSummaryYearRoute
   AuthedPlacesIndexRoute: typeof AuthedPlacesIndexRoute
   AuthedRecordsIndexRoute: typeof AuthedRecordsIndexRoute
+  AuthedSummaryIndexRoute: typeof AuthedSummaryIndexRoute
   AuthedRecordsRecordIdEditRoute: typeof AuthedRecordsRecordIdEditRoute
 }
 
@@ -400,8 +440,10 @@ const AuthedRouteRouteChildren: AuthedRouteRouteChildren = {
   AuthedZukanRoute: AuthedZukanRoute,
   AuthedPlacesPlaceKeyRoute: AuthedPlacesPlaceKeyRoute,
   AuthedRecordsNewRoute: AuthedRecordsNewRoute,
+  AuthedSummaryYearRoute: AuthedSummaryYearRoute,
   AuthedPlacesIndexRoute: AuthedPlacesIndexRoute,
   AuthedRecordsIndexRoute: AuthedRecordsIndexRoute,
+  AuthedSummaryIndexRoute: AuthedSummaryIndexRoute,
   AuthedRecordsRecordIdEditRoute: AuthedRecordsRecordIdEditRoute,
 }
 

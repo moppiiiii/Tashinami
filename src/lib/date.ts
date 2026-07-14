@@ -1,10 +1,6 @@
-// このアプリは「日本時間で一杯を数える」。
-//
-// new Date(iso).getFullYear() のようなローカル依存の読み方をすると、サーバー（UTC）と
-// ブラウザ（JST）で結果が変わり、SSR とハイドレーションが食い違う。JST はサマータイムが
-// 無いので、+9h してから getUTC* で読めば、どの環境でも同じ壁時計になる。
-//
-// 保存は ISO（絶対時刻）のまま。ここで固定しているのは表示と入力の解釈だけ。
+// 日付は日本時間の壁時計で扱う。ローカル依存で読むと SSR（UTC）とブラウザ（JST）で
+// ずれるため、+9h してから getUTC* で読む（JST はサマータイムが無いので一致する）。
+// 保存は ISO のまま。ここで固定するのは表示と入力の解釈だけ。
 const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
 const MS_DAY = 86_400_000;
 
@@ -45,6 +41,12 @@ export function formatJstMonthDay(iso: string): string {
 export function jstMonth(iso: string): number | null {
   const w = jstWall(iso);
   return w ? w.getUTCMonth() : null;
+}
+
+/** 年（日本時間）。壊れた値なら null。 */
+export function jstYear(iso: string): number | null {
+  const w = jstWall(iso);
+  return w ? w.getUTCFullYear() : null;
 }
 
 /** 今日から見て何日前か。壊れた値なら null。 */

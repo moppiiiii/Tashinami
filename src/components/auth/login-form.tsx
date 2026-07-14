@@ -21,7 +21,8 @@ export function LoginForm({ redirectTo }: { redirectTo?: string }) {
     onSubmit: async ({ value }) => {
       try {
         await signIn.mutateAsync(value);
-        navigate({ href: dest });
+        // 遷移完了まで await する。ここで返すと遷移までの数百 ms ボタンが再活性化して見える。
+        await navigate({ href: dest });
       } catch {
         // 失敗はミューテーションの error として表示する（submit 自体は完了扱い）。
       }
