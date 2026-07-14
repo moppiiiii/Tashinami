@@ -4,21 +4,19 @@ import creatorImg from "@/assets/creator.webp";
 import { Chip } from "@/components/common/chip";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
+import { pageHead } from "@/lib/seo";
 
 // 公開ページ（未ログインでも閲覧可）。制作者（運営者）自身の紹介。
 // 画像・外部リンクなど作り込む余地があるため、legal（md）とは分けて JSX で実装する。
 // TODO: X アカウント・ポートフォリオが用意できたら、準備中の表示をリンクに差し替える。
 
 export const Route = createFileRoute("/creator")({
-  head: () => ({
-    meta: [
-      { title: "制作者について — 嗜み（Tashinami）" },
-      {
-        name: "description",
-        content: "嗜み（Tashinami）を制作している個人開発者の紹介です。",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "制作者について — 嗜み（Tashinami）",
+      description: "嗜み（Tashinami）を制作している個人開発者の紹介です。",
+      path: "/creator",
+    }),
   component: CreatorPage,
 });
 

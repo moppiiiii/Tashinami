@@ -564,6 +564,61 @@ details[open] .lp-caret {
   margin-bottom: 1.4rem;
 }
 
+/* 作り方のタブ。選択中だけが差し色で灯り、下辺の線がその一本だけ濃くなる。 */
+.dg-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.6rem;
+  border-bottom: 1px solid var(--ink-line);
+}
+
+.dg-tab {
+  padding: 0.5rem 0.9rem;
+  margin-bottom: -1px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font-size: 0.9rem;
+  color: var(--rice-dim);
+  cursor: pointer;
+  transition:
+    color 200ms ease,
+    border-color 200ms ease;
+}
+
+.dg-tab:hover {
+  color: var(--rice);
+}
+
+.dg-tab[aria-selected="true"] {
+  color: var(--dg-accent, var(--amber));
+  border-bottom-color: var(--dg-accent, var(--amber));
+}
+
+.dg-tab:focus-visible {
+  outline: 2px solid var(--amber-bright);
+  outline-offset: -2px;
+  border-radius: 6px;
+}
+
+/* 手順そのものにフォーカスが乗る（タブパネル）。枠は出さず、輪郭だけ示す。 */
+.dg-panel:focus-visible {
+  outline: 2px solid var(--amber-bright);
+  outline-offset: 8px;
+  border-radius: 10px;
+}
+
+/* 作り方の一行に添える比率・適温。 */
+.dg-tab__meta {
+  margin-left: 0.6rem;
+  font-family: var(--latin);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.78rem;
+  white-space: nowrap;
+  color: var(--dg-accent, var(--amber));
+}
+
 /* 手順。番号は琥珀の丸、次の番号へ細い軸が落ちる。 */
 .dg-steps {
   display: grid;
@@ -651,5 +706,9 @@ details[open] .lp-caret {
 
   .dg-shelf__item:hover {
     transform: none;
+  }
+
+  .dg-tab {
+    transition: none;
   }
 }

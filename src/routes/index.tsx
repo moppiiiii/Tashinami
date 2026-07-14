@@ -14,10 +14,14 @@ import { Chip } from "@/components/common/chip";
 import { Meter } from "@/components/common/meter";
 import { Footer } from "@/components/layout/footer";
 import { DrinkImage } from "@/components/zukan/drink-image";
+import { APP_DESCRIPTION, APP_TITLE, pageHead } from "@/lib/seo";
 
 // 公開ランディング（未ログインでも見える）。コンセプト（docs/concept.md）の
 // 世界観を伝えるだけの薄いページ。データはすべてダミー。
 export const Route = createFileRoute("/")({
+  // og:* は __root と同じ値になるが、canonical はここでしか張れない。
+  head: () =>
+    pageHead({ title: APP_TITLE, description: APP_DESCRIPTION, path: "/" }),
   component: Landing,
 });
 

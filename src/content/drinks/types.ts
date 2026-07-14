@@ -23,6 +23,21 @@ export type Glass = { name: string; note: string };
 export type Step = { title: string; body: string };
 
 /**
+ * 作り方 1 つ分。飲み方（ハイボール・ロック…）や注ぎ方・燗の付け方など、
+ * カテゴリの中で手順が分かれるものを 1 件ずつ持つ。
+ * meta は見出しに添える短い注記（比率・適温など）。
+ */
+export type Method = {
+  /** タブに出る名前。styles の name と揃えると行き来しやすい。 */
+  name: string;
+  /** 比率・適温など。無い作り方もある。 */
+  meta?: string;
+  /** その作り方を一行で。 */
+  note: string;
+  steps: Step[];
+};
+
+/**
  * 見取り図の 1 行。カテゴリによって「何の一覧か」が変わる
  * （ビールならスタイル、焼酎なら割り方、ウイスキーなら飲み方）。
  * meta は右端に出る短い注記（適温・比率など）。無い行もある。
@@ -41,11 +56,10 @@ export type DrinkGuide = {
   lead: string;
   temperature: Temperature;
   glasses: Glass[];
-  /** 手順の見出し。カテゴリで変わる（"注ぎ方" / "燗のつけ方" / "お湯割りの作り方"）。 */
-  stepsTitle: string;
-  /** 手順の見出しに添える短い注記（"三度注ぎ" など）。 */
-  stepsNote?: string;
-  steps: Step[];
+  /** 作り方の見出し。カテゴリで変わる（"注ぎ方" / "温度のつけ方" / "割り方"）。 */
+  methodsTitle: string;
+  /** 作り方。先頭がそのカテゴリの基本（タブの初期選択になる）。 */
+  methods: Method[];
   /** 見取り図の見出し（"スタイルの見取り図" / "割り方の見取り図"）。 */
   stylesTitle: string;
   styles: StyleRow[];
