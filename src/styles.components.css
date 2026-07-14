@@ -712,3 +712,334 @@ details[open] .lp-caret {
     transition: none;
   }
 }
+
+/* ─────────────────────────────────────────────────────────────
+   年次サマリー（summary）＝年鑑の見開き。飲み方ガイドと同じ骨格
+   （左に札、右に読み物）。差し色は月・カテゴリごとに --sm-c で受ける。
+   ───────────────────────────────────────────────────────────── */
+
+.sm-spread {
+  display: grid;
+  grid-template-columns: 18rem 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .sm-spread {
+    grid-template-columns: 1fr;
+    gap: 1.8rem;
+  }
+}
+
+.sm-dossier {
+  display: grid;
+  gap: 1.4rem;
+  padding: 1.5rem;
+  position: sticky;
+  top: 1rem;
+}
+
+@media (max-width: 900px) {
+  .sm-dossier {
+    position: static;
+  }
+}
+
+.sm-year {
+  font-family: var(--latin);
+  font-variant-numeric: tabular-nums;
+  font-size: 2.6rem;
+  line-height: 1;
+  color: var(--amber-bright);
+}
+
+.sm-fact {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  font-size: 0.86rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px dashed rgba(214, 165, 96, 0.14);
+}
+
+.sm-fact > span:first-child {
+  color: var(--rice-dim);
+}
+
+.sm-fact > b {
+  font-weight: 600;
+  text-align: right;
+}
+
+.sm-sec {
+  padding: 2rem 0;
+  border-top: 1px solid var(--ink-line);
+}
+
+.sm-sec:first-of-type {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.sm-sec__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  margin-bottom: 1.4rem;
+}
+
+/* 月の灯り。12 本の柱＝その月の杯数、色＝その月にいちばん飲んだ酒。 */
+.sm-months {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 0.35rem;
+  align-items: end;
+  height: 9rem;
+}
+
+.sm-month {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: center;
+  align-content: end;
+  height: 100%;
+}
+
+.sm-month__bar {
+  width: 100%;
+  min-height: 2px;
+  border-radius: 4px 4px 2px 2px;
+  background: linear-gradient(
+    180deg,
+    var(--sm-c, var(--amber)),
+    color-mix(in oklab, var(--sm-c, var(--amber)) 35%, transparent)
+  );
+  box-shadow: 0 0 14px
+    color-mix(in oklab, var(--sm-c, var(--amber)) 30%, transparent);
+}
+
+.sm-month__n,
+.sm-month__m {
+  font-family: var(--latin);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.62rem;
+  color: var(--rice-dim);
+}
+
+/* カテゴリの比。1 本の帯に、その年の味を並べる。 */
+.sm-band {
+  display: flex;
+  height: 12px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--ink-line);
+}
+
+.sm-band > i {
+  display: block;
+  height: 100%;
+}
+
+.sm-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.1rem;
+  margin-top: 0.9rem;
+  font-size: 0.8rem;
+  color: var(--rice-dim);
+}
+
+.sm-legend > li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.sm-legend i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.sm-legend b {
+  color: var(--rice);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 忘れがたい夜。日付は琥珀、本文は明朝で銘柄だけ立てる。 */
+.sm-line {
+  display: grid;
+  grid-template-columns: 3.4rem 1fr;
+  gap: 0.9rem;
+  align-items: baseline;
+}
+
+/* ── 章立て（リール）。その年を初めて開いたときだけ流れる ────────
+   幕はリヴィールと同じ（.lp-reveal-veil）。1 章＝1 画面で送る。 */
+
+.sm-reel {
+  height: 100dvh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+}
+
+.sm-reel::-webkit-scrollbar {
+  display: none;
+}
+
+.sm-chapter {
+  min-height: 100dvh;
+  scroll-snap-align: start;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 3rem 1.5rem;
+}
+
+.sm-chapter__inner {
+  max-width: 28rem;
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 800ms ease,
+    transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sm-chapter--lit .sm-chapter__inner {
+  opacity: 1;
+  transform: none;
+}
+
+.sm-chapter__label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--rice-dim);
+}
+
+.sm-figure {
+  font-family: var(--latin);
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(3.4rem, 11vw, 5.4rem);
+  line-height: 1;
+  font-weight: 600;
+  margin: 1.1rem 0 0.4rem;
+  text-shadow: 0 0 38px color-mix(in oklab, currentColor 40%, transparent);
+}
+
+/* 銘柄名・店名の章。数字より小さく、明朝で組む。 */
+.sm-figure--jp {
+  font-family: var(--jp-serif);
+  font-size: clamp(1.9rem, 6vw, 3rem);
+  line-height: 1.3;
+  text-wrap: balance;
+}
+
+.sm-figure small {
+  font-size: 0.3em;
+  margin-left: 0.4rem;
+  letter-spacing: 0.08em;
+  color: var(--rice-dim);
+}
+
+.sm-chapter__copy {
+  font-family: var(--jp-serif);
+  font-size: 1.05rem;
+  line-height: 1.9;
+  margin-top: 0.9rem;
+  text-wrap: balance;
+}
+
+.sm-chapter__copy--large {
+  font-size: 1.35rem;
+  line-height: 1.9;
+  margin-top: 1.4rem;
+}
+
+.sm-chapter__note {
+  margin-top: 0.7rem;
+  font-size: 0.85rem;
+  color: var(--rice-dim);
+}
+
+.sm-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1.6rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  border: 1px solid rgba(207, 146, 71, 0.32);
+  background: rgba(207, 146, 71, 0.1);
+  font-family: var(--jp-serif);
+}
+
+.sm-type b {
+  color: var(--amber-bright);
+  font-weight: 600;
+}
+
+.sm-skip {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.4rem;
+  z-index: 1;
+  border: 0;
+  background: none;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.8rem;
+  color: var(--rice-dim);
+  cursor: pointer;
+  transition: color 180ms ease;
+}
+
+.sm-skip:hover {
+  color: var(--amber-bright);
+}
+
+.sm-skip:focus-visible {
+  outline: 2px solid var(--amber-bright);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.sm-hint {
+  position: absolute;
+  bottom: 1.4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: var(--rice-dim);
+  animation: sm-breathe 2.6s ease-in-out infinite;
+}
+
+@keyframes sm-breathe {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: translate(-50%, 0);
+  }
+
+  50% {
+    opacity: 0.9;
+    transform: translate(-50%, 4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sm-chapter__inner {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .sm-hint {
+    animation: none;
+  }
+}

@@ -45,7 +45,7 @@ function EditRecordPage() {
               <RecordForm
                 categories={categories}
                 record={record}
-                onUpdated={() => void navigate({ to: "/records" })}
+                onUpdated={() => navigate({ to: "/records" })}
               />
               <div className="mt-8 flex justify-center">
                 <RecordDeleteButton record={record} />
