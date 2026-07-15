@@ -158,7 +158,12 @@ export function buildAnnualSummary(
     .map((r) => r.placeName?.trim())
     .filter((p): p is string => !!p);
 
-  const returned = tally(yearRecords.map((r) => r.name.trim()).filter(Boolean));
+  const returned = tally(
+    yearRecords.flatMap((r) => {
+      const name = r.name.trim();
+      return name ? [name] : [];
+    }),
+  );
 
   let best: BestPour | null = null;
   for (const r of yearRecords) {
