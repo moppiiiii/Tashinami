@@ -35,8 +35,10 @@ export function FieldError({
   className?: string;
 }) {
   const text = errors
-    .map((e) => (typeof e === "string" ? e : e?.message))
-    .filter(Boolean)
+    .flatMap((e) => {
+      const m = typeof e === "string" ? e : e?.message;
+      return m ? [m] : [];
+    })
     .join(", ");
   if (!text) return null;
   return (
