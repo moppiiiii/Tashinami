@@ -14,6 +14,7 @@ import {
   type Encounter,
   seasonsTouched,
 } from "@/components/zukan/encounters";
+import { getDrinkGuide } from "@/content/drinks";
 import { categoriesQueryOptions } from "@/server/categories";
 import { recordsQueryOptions } from "@/server/records";
 
@@ -145,9 +146,12 @@ function CategorySection({
   slug: string | null;
   items: Encounter[];
 }) {
+  // ガイドを持たないカテゴリ（「その他」など）もあるので、あるときだけ誘う。
+  const guided = slug && getDrinkGuide(slug) ? slug : null;
+
   return (
     <section className="mt-11">
-      <div className="mb-5 flex items-baseline gap-3 border-b border-[color:var(--ink-line)] pb-3">
+      <div className="mb-5 flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-[color:var(--ink-line)] pb-3">
         <span className="text-rice-dim text-[0.68rem] font-bold tracking-[0.28em] uppercase">
           {latin}
         </span>
@@ -155,6 +159,15 @@ function CategorySection({
         <span className="text-rice-dim ml-auto text-sm tabular-nums">
           {items.length} と出会った
         </span>
+        {guided ? (
+          <Link
+            to="/drinks/$slug"
+            params={{ slug: guided }}
+            className="text-rice-dim hover:text-amber-bright text-sm no-underline transition-colors"
+          >
+            飲み方 →
+          </Link>
+        ) : null}
       </div>
       <ul className="grid [grid-template-columns:repeat(auto-fill,minmax(140px,1fr))] gap-3">
         {items.map((e) => (

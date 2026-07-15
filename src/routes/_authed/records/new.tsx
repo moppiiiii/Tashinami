@@ -38,9 +38,10 @@ function NewRecordPage() {
         <section className="animate-lp-rise pb-16 motion-reduce:animate-none">
           <RecordForm
             categories={categories}
-            onSuccess={(result) => {
+            onSuccess={async (result) => {
               announceReveal(result);
-              void navigate({ to: "/home" });
+              // 遷移完了まで await する（返すと /home が出るまでボタンが再び押せて見える）。
+              await navigate({ to: "/home" });
             }}
           />
         </section>

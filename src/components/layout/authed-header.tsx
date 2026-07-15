@@ -9,6 +9,7 @@ const NAV = [
   { to: "/records", label: "記録" },
   { to: "/zukan", label: "図鑑" },
   { to: "/top10", label: "TOP10" },
+  { to: "/summary", label: "サマリー" },
   { to: "/places", label: "場所" },
   { to: "/drinks", label: "飲み方" },
 ] as const;
@@ -16,6 +17,7 @@ const NAV = [
 export function AuthedHeader() {
   const navigate = useNavigate();
   const signOut = useSignOut();
+  const leaving = signOut.isPending || signOut.isSuccess;
 
   return (
     <header className="flex flex-wrap items-center gap-x-5 gap-y-3 py-6">
@@ -34,7 +36,6 @@ export function AuthedHeader() {
           <Link
             key={item.to}
             to={item.to}
-            activeOptions={{ exact: true }}
             activeProps={{ className: "text-amber-bright" }}
             inactiveProps={{
               className:
@@ -58,14 +59,16 @@ export function AuthedHeader() {
           variant="ghost"
           type="button"
           className="text-sm"
-          disabled={signOut.isPending}
+          // 成功した時点で isPending は false に戻るが、/login へ着くまでは
+          // まだこの画面にいる。isSuccess も見て、押せる状態に戻さない。
+          disabled={leaving}
           onClick={() =>
             signOut.mutate(undefined, {
               onSuccess: () => navigate({ to: "/login" }),
             })
           }
         >
-          {signOut.isPending ? "ログアウト中…" : "ログアウト"}
+          {leaving ? "ログアウト中…" : "ログアウト"}
         </Button>
       </div>
     </header>

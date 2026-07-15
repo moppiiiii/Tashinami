@@ -1,7 +1,7 @@
 import { useForm } from "@tanstack/react-form";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ChevronDown, Heart } from "lucide-react";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import { Button } from "@/components/common/button";
 import { Card } from "@/components/common/card";
@@ -23,8 +23,8 @@ import { buildPlaces } from "./places";
 import { RatingInput } from "./rating-input";
 import type { RevealResult } from "./record-reveal";
 
-// record を渡すと編集モード。onSuccess は新規追加時のみで、
-// 遷移とリヴィールの起動はページ側の仕事。
+// record を渡すと編集モード。onSuccess は新規時のみ（遷移・リヴィールはページ側）。
+// コールバックを await する間ボタンを押せないままにするため、Promise を返してよい。
 export function RecordForm({
   categories,
   record,
@@ -33,18 +33,22 @@ export function RecordForm({
 }: {
   categories: Category[];
   record?: DrinkRecord;
-  onSuccess?: (result: RevealResult) => void;
-  onUpdated?: () => void;
+  onSuccess?: (result: RevealResult) => void | Promise<void>;
+  onUpdated?: () => void | Promise<void>;
 }) {
   const addRecord = useAddRecord();
   const updateRecord = useUpdateRecord();
   const isEdit = record != null;
 
-  // 編集中の一杯は自分自身を除く（「N杯目」「この場所で N 杯」がずれる）。
+  // 出会いの判定（初/再会・「この場所で N 杯」）はフォームを開いた時点で固定する。
+  // 購読し続けると、送信後の楽観更新で残ったフォームが「2杯目」に化ける。
   const { data: records } = useSuspenseQuery(recordsQueryOptions());
+  const baseline = useRef(records).current;
+
+  // 編集中の一杯は自分自身を除く（「N杯目」がひとつずれる）。
   const others = useMemo(
-    () => (record ? records.filter((r) => r.id !== record.id) : records),
-    [records, record],
+    () => (record ? baseline.filter((r) => r.id !== record.id) : baseline),
+    [baseline, record],
   );
   const encounters = useMemo(() => buildEncounters(others), [others]);
   const places = useMemo(() => buildPlaces(others), [others]);
@@ -63,7 +67,7 @@ export function RecordForm({
       price: record?.price != null ? String(record.price) : "",
       abv: record?.abv != null ? String(record.abv) : "",
     },
-    onSubmit: async ({ value, formApi }) => {
+    onSubmit: async ({ value }) => {
       const name = value.name.trim();
 
       // 既知の銘柄なら図鑑のカテゴリを引き継ぐ（未分類に落とさない）。
@@ -86,13 +90,14 @@ export function RecordForm({
 
       if (record) {
         await updateRecord.mutateAsync({ id: record.id, ...fields });
-        onUpdated?.();
+        await onUpdated?.();
         return;
       }
 
       await addRecord.mutateAsync(fields);
-      formApi.reset();
-      onSuccess?.({
+      // reset はしない。どのみち遷移でこの画面は消えるのに、
+      // 空になったフォームが一瞬見えるだけになる。
+      await onSuccess?.({
         // 殿堂の席と同じ正規化キーで渡す（綴り違いで「未収蔵」に見せない）。
         key: normalizeName(name),
         name,
@@ -189,8 +194,7 @@ export function RecordForm({
                   value={field.state.value}
                   onChange={(v) => field.handleChange(v)}
                 />
-                {/* 測るのは「この一杯」。銘柄の順位は殿堂で本人が選ぶ（docs/concept.md §5）。
-                    ここを書かないと「点数＝順位」と読まれ、10 点が並んだときに破綻して見える。 */}
+                {/* 測るのは「この一杯」。銘柄の順位は殿堂で本人が選ぶ（docs/concept.md §5）。 */}
                 <p className="text-rice-dim text-xs">
                   順位は TOP10 で自分で選びます。
                 </p>
@@ -242,9 +246,8 @@ export function RecordForm({
             )}
           </form.Field>
 
-          {/* 詳細は既定で畳んでおく（素早い記録を邪魔しない）。
-              details は JS 無しでも開くので、ハイドレーション前に押されると DOM に
-              open が付き、React が属性差分を警告する。開いた状態が正しいので抑止する。 */}
+          {/* details は JS 無しでも開くため、ハイドレーション前に押されると open 差分を
+              React が警告する。開いた状態が正しいので抑止する。 */}
           <div className="via-ink-line h-px bg-linear-to-r from-transparent to-transparent sm:col-span-2" />
           <details className="group sm:col-span-2" suppressHydrationWarning>
             <summary className="flex cursor-pointer list-none items-center justify-between py-1 text-sm select-none">

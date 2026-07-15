@@ -5,19 +5,17 @@ import { Card } from "@/components/common/card";
 import { Chip } from "@/components/common/chip";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
+import { pageHead } from "@/lib/seo";
 
 // 連絡先。プラポリ・利用規約が案内する問い合わせ窓口の実体。
 // TODO: X アカウントを用意したら、ハンドルとプロフィールへのリンクに差し替える。
 export const Route = createFileRoute("/contact")({
-  head: () => ({
-    meta: [
-      { title: "お問い合わせ — 嗜み（Tashinami）" },
-      {
-        name: "description",
-        content: "嗜み（Tashinami）のお問い合わせ窓口は準備中です。",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "お問い合わせ — 嗜み（Tashinami）",
+      description: "嗜み（Tashinami）のお問い合わせ窓口は準備中です。",
+      path: "/contact",
+    }),
   component: ContactPage,
 });
 

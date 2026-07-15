@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { DrinkShelf } from "@/components/drinks/drink-shelf";
 import { AdaptiveHeader } from "@/components/layout/adaptive-header";
 import { Footer } from "@/components/layout/footer";
+import { pageHead } from "@/lib/seo";
 import { userQueryOptions } from "@/server/auth";
 
 // 公開ページ（未ログインでも閲覧可）。飲み方ガイドの入口＝器の並ぶ棚。
@@ -11,16 +12,13 @@ import { userQueryOptions } from "@/server/auth";
 export const Route = createFileRoute("/drinks/")({
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(userQueryOptions()),
-  head: () => ({
-    meta: [
-      { title: "飲み方ガイド — 嗜み（Tashinami）" },
-      {
-        name: "description",
-        content:
-          "ビール・ワイン・日本酒・焼酎・ウイスキー・カクテル。適温、器、注ぎ方、合わせる肴を、カテゴリごとにまとめました。",
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: "飲み方ガイド — 嗜み（Tashinami）",
+      description:
+        "ビール・ワイン・日本酒・焼酎・ウイスキー・カクテル。適温、器、注ぎ方、合わせる肴を、カテゴリごとにまとめました。",
+      path: "/drinks",
+    }),
   component: DrinksIndexPage,
 });
 

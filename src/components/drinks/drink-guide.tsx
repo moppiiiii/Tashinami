@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { Card } from "@/components/common/card";
+import { MethodSteps } from "@/components/drinks/method-steps";
 import { TempGauge } from "@/components/drinks/temp-gauge";
 import { DrinkImage } from "@/components/zukan/drink-image";
 import { accentForSlug } from "@/components/zukan/encounters";
@@ -69,27 +70,10 @@ export function DrinkGuideView({ guide }: { guide: Guide }) {
         <section className="dg-sec">
           <div className="dg-sec__head">
             <h2 className="font-jp-serif text-xl font-semibold">
-              {guide.stepsTitle}
+              {guide.methodsTitle}
             </h2>
-            {guide.stepsNote ? (
-              <span className="text-rice-dim text-sm">{guide.stepsNote}</span>
-            ) : null}
           </div>
-          <ol className="dg-steps">
-            {guide.steps.map((step, i) => (
-              <li key={step.title} className="dg-step">
-                <span className="dg-step__mark">{i + 1}</span>
-                <div>
-                  <h3 className="font-jp-serif text-base font-semibold">
-                    {step.title}
-                  </h3>
-                  <p className="text-rice-dim mt-1 text-sm leading-relaxed">
-                    {step.body}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ol>
+          <MethodSteps methods={guide.methods} />
         </section>
 
         <section className="dg-sec">
